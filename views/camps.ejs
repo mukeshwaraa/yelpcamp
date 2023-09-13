@@ -1,0 +1,22 @@
+<% layout('../boilerplate/boilerplate') -%>
+<% for(camp of campgrounds){ %>
+<div class="container" >
+<div class="card mb-3 cardForward" style="cursor: pointer;"   onclick="location.href='/camps/<%=camp.id%>';" >
+    <div class="row g-0 p-1">
+      <div class="col-md-4 align-self-center">
+        <img src="<%= camp.image %>" class="img-fluid rounded-start" alt="...">
+      </div>
+      <div class="col-md-8 d-flex flex-column">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h3 class="card-title align-self-center"><%= camp.name %></h3>
+          <p class="card-text "><%= camp.description %></p>
+          <p class="card-text"><small class="text-body-secondary"><%= camp.location %></small></p>
+        </div>
+        
+              
+        
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
