@@ -1,27 +1,40 @@
 <% layout('../boilerplate/boilerplate') -%>
-<div class="container" >
+<div class="container">
+
 <div class="card mb-3">
-    
-      <div class="card-header d-flex justify-content-center  mb-1 rounded " >
-        <h3 class="card-title"><%= camp.name %></h3>
-      </div>
-      <div class="p-2">
-      <div class="text-center">
-        <img src="<%= camp.image %>" class="rounded" alt="..." style="width: 50vw; max-height: 50vh;" >
-      </div>
-      <div class="d-flex flex-column">
-        <div class="card-body d-flex flex-column justify-content-between">
-           <p class="card-text "><%= camp.description %></p>
-           <h3 class="card-title"><%= camp.location %></h3>
-          <h4 class="card-text text-muted"><small class="text-body-secondary">$<%= camp.price %> per night</small></h4>
-        </div>  
-      </div>
-      <div class="row">
-      <form class="d-inline col-6" action="/camps/<%= camp.id%>?_method=DELETE" method="POST">
-        <button type="submit" class="btn btn-danger col-12">Delete Campground</button>
-      </form>
-        <a href="/camps/<%= camp.id%>/edit" class="btn btn-info col-6">Edit Campground</a>
-      </div>
-    </div>
+  <div class="card-header d-flex justify-content-center  mb-1 rounded " >
+    <h3 class="card-title"><%= camp.name %></h3>
   </div>
+  <div class="text-center">
+  <img src="<%= camp.image %>" class="rounded" alt="..." style="max-width:100%; max-height: 50vh;" >
+</div>
+  <div class="card-body">
+    <p class="card-text"><%= camp.description %></p>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><h4><%= camp.location %></h4></li>
+    <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
+    <li>
+      <div class="card-body mb-2">
+        <div class="row">
+          <form class="d-inline col-6" action="/camps/<%= camp.id%>?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-danger col-12">Delete Campground</button>
+          </form>
+            <a href="/camps/<%= camp.id%>/edit" class="btn btn-info col-6">Edit Campground</a>
+          </div>
+        </div></li>
+  </ul>
+    <div class="card-header d-flex justify-content-center  mb-1 rounded bg-white">
+      <h2 class="card-title">Reviews</h2>
+    </div>
+    <% if(camp.reviews.length){ %>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><h4><%= camp.location %></h4></li>
+      <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
+    </ul>
+  <% }else{ %>
+    <ul class="list-group list-group-flush text-center">
+      <li class="list-group-item"><h4>Be the First one to Review</h4></li>
+    </ul>
+    <% } %>
 </div>
