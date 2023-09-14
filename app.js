@@ -71,10 +71,18 @@ app.post('/camps/new',campValidator, asyncWrap(async(req,res,next) =>{
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
     const camp = await campground.findById(id).populate('reviews')
+    if(!camp){
+        req.flash('error','CAmpground not found');
+        res.redirect('/camps')
+    }
     res.render('details',{camp})
 }))
 app.delete('/camps/:id',asyncWrap( async(req,res,next) =>{
-    await campground.findByIdAndDelete(req.params.id);
+    const camp = await campground.findByIdAndDelete(req.params.id);
+    if(!camp){
+        req.flash('error','CAmpground not found');
+        res.redirect('/camps')
+    }
     req.flash('success','Campground successfully Deleted'); 
     res.redirect('/camps');
 }))
@@ -82,6 +90,10 @@ app.post('/camps/:id/review',reviewValidator,async(req,res,next) =>{
     const{review:revs} = req.body;
     const {id} = req.params;
     const camp = await campground.findById(id)
+    if(!camp){
+        req.flash('error','CAmpground not found');
+        res.redirect('/camps')
+    }
     const rev = new review({...revs});
     await rev.save();
     await camp.reviews.push(rev)
@@ -92,6 +104,10 @@ app.post('/camps/:id/review',reviewValidator,async(req,res,next) =>{
 app.get('/camps/:id/edit',asyncWrap(async(req,res,next) => {
     const {id} = req.params;
     const camp = await campground.findById(id)
+    if(!camp){
+        req.flash('error','CAmpground not found');
+        res.redirect('/camps')
+    }
     res.render('edit',{camp})   
 }))
 app.put('/camps/:id/edit',asyncWrap(async(req,res,next) => {
