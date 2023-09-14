@@ -5,6 +5,9 @@ const methodOverride = require('method-override');
 const asyncWrap = require('./utils/asyncWrap'); 
 const campValidator = require('./utils/campValidation');
 const reviewValidator = require('./utils/reviewValidator');
+const session = require('express-session');
+const cookie_parser = require('cookie-parser');
+const flash = require('connect-flash')
 // override with POST having ?_method=DELETE
 // use ejs-locals for all ejs templates:
 const mongoose = require('mongoose');
@@ -28,6 +31,24 @@ app.set('views',path.join(__dirname,'views'));
 app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.urlencoded());
 app.use(methodOverride('_method'))
+app.use(cookie_parser('secret'))
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      // secure: true,
+      httpOnly: true,
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    }
+  }))
+app.use(flash());
+app.use((req,res,next) =>{
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 app.get('/',(req,res)=>{
     res.render('home')
 });
@@ -43,8 +64,9 @@ app.get('/camps/new',(req,res) =>{
 app.post('/camps/new',campValidator, asyncWrap(async(req,res,next) =>{
     const{campground:camp} = req.body;
     const camps = new campground({...camp});
-    await camps.save().then((doc) => 
-    res.redirect(`/camps/${doc._id}`)) 
+    await camps.save().then((doc) => {
+    req.flash('success','New campground successfully created');    
+    res.redirect(`/camps/${doc._id}`)}) 
 }))
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
@@ -53,6 +75,7 @@ app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
 }))
 app.delete('/camps/:id',asyncWrap( async(req,res,next) =>{
     await campground.findByIdAndDelete(req.params.id);
+    req.flash('success','Campground successfully Deleted'); 
     res.redirect('/camps');
 }))
 app.post('/camps/:id/review',reviewValidator,async(req,res,next) =>{
@@ -62,8 +85,9 @@ app.post('/camps/:id/review',reviewValidator,async(req,res,next) =>{
     const rev = new review({...revs});
     await rev.save();
     await camp.reviews.push(rev)
-    await camp.save().then((doc) => 
-    res.redirect(`/camps/${doc._id}`))    
+    await camp.save().then((doc) =>{
+    req.flash('success','Review successfully created');  
+    res.redirect(`/camps/${doc._id}`)})    
 })
 app.get('/camps/:id/edit',asyncWrap(async(req,res,next) => {
     const {id} = req.params;
@@ -75,6 +99,7 @@ app.put('/camps/:id/edit',asyncWrap(async(req,res,next) => {
     const{campground:camps} =req.body;
     const camp = await campground.findByIdAndUpdate(id,{...camps});
     camp.save().then((doc) => {
+    req.flash('success','Campground changes has been successfully saved'); 
         res.redirect(`/camps/${doc._id}`);
     })
 }))
