@@ -14,7 +14,7 @@
   <ul class="list-group list-group-flush">
     <li class="list-group-item"><h4><%= camp.location %></h4></li>
     <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
-    <li>
+    <li class="list-group-item">
       <div class="card-body mb-2">
         <div class="row">
           <form class="d-inline col-6" action="/camps/<%= camp.id%>?_method=DELETE" method="POST">
@@ -24,17 +24,73 @@
           </div>
         </div></li>
   </ul>
-    <div class="card-header d-flex justify-content-center  mb-1 rounded bg-white">
-      <h2 class="card-title">Reviews</h2>
+    <div class="card-header d-flex justify-content-center  mb-3 rounded bg-white">
+      <h2 class="card-title">Add your Reviews</h2>
     </div>
+    <form class="row g-3 needs-validation mb-3" method="POST" action="/camps/<%= camp.id %>/review" novalidate>
+      <div class="container">
+        <fieldset class="starability-basic col-8 offset-2" style="width: max-content;" >
+          <legend>Rating:</legend>
+          <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+          <input type="radio" id="first-rate1" name="review[rating]"value="1" required/>
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+          <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please tell us about your Camp
+          </div>  
+        </div> 
+        </fieldset>
+     
+      <div class="mb-3  col-8 offset-2">
+        <label for="description" class="form-label">Description</label>
+        <textarea  class="form-control" id="description"  required name="review[review]" rows="3"></textarea>
+        <div class="valid-feedback">
+            Looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please tell us about your Camp
+          </div>  
+        </div>  
+        
+    <div class="col-12">
+      <button type="submit" class="btn btn-success col-6 offset-3">Add Your Review</button>
+    </div>
+    </div>
+    
+    <div class="card mb-3">
+      
+      <div class="card-header">
+        <h3 class="text-center">Review</h3>
+      </div>
     <% if(camp.reviews.length){ %>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item"><h4><%= camp.location %></h4></li>
-      <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
-    </ul>
+        
+        <ul class="list-group list-group-flush">
+          <% camp.reviews.forEach(rev => { %>
+            <%- console.log(rev) %>
+            <li class="list-group-item d-inline">
+              <p class="starability-result" data-rating="<%=rev.rating %>">
+                Rated: 3 stars
+              </p>
+            <p><h5><%= rev.review %></h5></p></li>  
+          <% }); %>
+          
+        </ul>
+      
   <% }else{ %>
-    <ul class="list-group list-group-flush text-center">
-      <li class="list-group-item"><h4>Be the First one to Review</h4></li>
-    </ul>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><h4 class="text-center">Be the first to review</h4></li>
+      \</ul>
+    
     <% } %>
+  </div>
 </div>

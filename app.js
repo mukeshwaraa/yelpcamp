@@ -4,6 +4,7 @@ const engine = require('ejs-mate');
 const methodOverride = require('method-override'); 
 const asyncWrap = require('./utils/asyncWrap'); 
 const campValidator = require('./utils/campValidation');
+const reviewValidator = require('./utils/reviewValidator');
 // override with POST having ?_method=DELETE
 // use ejs-locals for all ejs templates:
 const mongoose = require('mongoose');
@@ -15,6 +16,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => { console.log("database connected") });
 const campground = require('./models/campgrounds');
+const review = require('./models/reviews')
 const AppError = require('./utils/error');
 
 
@@ -40,20 +42,29 @@ app.get('/camps/new',(req,res) =>{
 })
 app.post('/camps/new',campValidator, asyncWrap(async(req,res,next) =>{
     const{campground:camp} = req.body;
-    console.log
     const camps = new campground({...camp});
     await camps.save().then((doc) => 
     res.redirect(`/camps/${doc._id}`)) 
 }))
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
-    const camp = await campground.findById(id)
+    const camp = await campground.findById(id).populate('reviews')
     res.render('details',{camp})
 }))
 app.delete('/camps/:id',asyncWrap( async(req,res,next) =>{
     await campground.findByIdAndDelete(req.params.id);
     res.redirect('/camps');
 }))
+app.post('/camps/:id/review',reviewValidator,async(req,res,next) =>{
+    const{review:revs} = req.body;
+    const {id} = req.params;
+    const camp = await campground.findById(id)
+    const rev = new review({...revs});
+    await rev.save();
+    await camp.reviews.push(rev)
+    await camp.save().then((doc) => 
+    res.redirect(`/camps/${doc._id}`))    
+})
 app.get('/camps/:id/edit',asyncWrap(async(req,res,next) => {
     const {id} = req.params;
     const camp = await campground.findById(id)
