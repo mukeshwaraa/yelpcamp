@@ -125,6 +125,7 @@ app.get('/camps/logout',(req,res,next) =>{
 })
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
+
     const camp = await campground.findById(id).populate('reviews').populate('author');
     res.render('details',{camp})
 }))
@@ -138,6 +139,10 @@ app.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next)
     const{review:revs} = req.body;
     const {id} = req.params;
     const camp = await campground.findById(id)
+    if(!camp){
+        req.flash('error','CAmpground not found');
+        res.redirect('/camps')
+    }
     const rev = new review({...revs});
     await rev.save();
     await camp.reviews.push(rev)
@@ -149,7 +154,8 @@ app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,n
     //isAuth
     const {id} = req.params;
     const camp = await campground.findById(id)
-    res.render('edit',{camp})
+
+    res.render('edit',{camp})master
 }))
 app.put('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,next) => {
     //isAuth
