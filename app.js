@@ -155,7 +155,7 @@ app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,n
     const {id} = req.params;
     const camp = await campground.findById(id)
 
-    res.render('edit',{camp})master
+    res.render('edit',{camp})
 }))
 app.put('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,next) => {
     //isAuth
