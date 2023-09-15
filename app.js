@@ -57,13 +57,16 @@ passport.use(new LocalStrategy(user.authenticate()));
 passport.serializeUser(user.serializeUser());
 passport.deserializeUser(user.deserializeUser());
 app.use((req,res,next) =>{
+    console.log(req.originalUrl)
+    console.log(req.get('Referrer'))
+    // console.log(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login')
+    if(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login'){
+        res.locals.returnTo = req.get('Referrer')
+        console.log(res.locals.returnTo);
+    }
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    next();
-})
-app.use((req,res,next) =>{
-    console.dir(req.get('Referrer'));
     next();
 })
 app.get('/',(req,res)=>{
@@ -89,25 +92,19 @@ app.post('/camps/new',isAuthenticated,campValidator, asyncWrap(async(req,res,nex
 app.get('/camps/register',(req,res) =>{
     res.render('register');
 })
-app.get('/camps/login',(req,res) =>{
-    res.render('login');
-})
-app.post('/camps/login',passport.authenticate('local',{ failureFlash:true, failureRedirect: '/camps/login' }) ,(req,res) =>{
-    req.flash('success','Your account have been successfully logged-in');
-    res.redirect('/camps')
-})
 app.post('/camps/register',asyncWrap(async(req,res,next) =>{
     try{
+    console.log(res.locals.returnTo)    
+    const redirectURL = res.locals.returnTo || '/camps';
     const{username,password,email} = req.body.user
     const users = new user({username,email});
     const registeredUser = await user.register(users,password);
-    console.log(registeredUser)
     req.login(registeredUser,(err) =>{
         if(err){
             return next(err)
         }else{                
     req.flash('success','Your account has been succesfully created');
-            res.redirect('/camps')
+            res.redirect(redirectURL);  
         }
     }) }
     catch(e){
@@ -116,6 +113,16 @@ app.post('/camps/register',asyncWrap(async(req,res,next) =>{
         res.redirect('/camps/register')
     }
 }))
+app.get('/camps/login',(req,res) =>{
+    res.render('login');
+})
+app.post('/camps/login',passport.authenticate('local',{ failureFlash:true, failureRedirect: '/camps/login' }) ,(req,res) =>{
+    console.log(res.locals.returnTo)   
+    const redirectURL = res.locals.returnTo || '/camps';
+    req.flash('success','Your account have been successfully logged-in');
+    res.redirect(redirectURL)
+})
+
 
 app.get('/camps/logout',(req,res,next) =>{
     req.logout(function (err) {
