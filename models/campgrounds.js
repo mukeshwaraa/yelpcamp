@@ -2,6 +2,7 @@ const { type } = require('express/lib/response');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Review = require('./reviews');
+const User = require('./user');
 
 const campgroundschema = new Schema({
     name:{
@@ -29,7 +30,11 @@ const campgroundschema = new Schema({
             type:Schema.Types.ObjectId,
             ref:Review
         }
-    ]
+    ],
+    author:{
+        type:Schema.Types.ObjectId,
+        ref:User
+    }
 })
 
 const campground = mongoose.model("Campground",campgroundschema);

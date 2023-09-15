@@ -8,6 +8,9 @@ const reviewValidator = require('./utils/reviewValidator');
 const session = require('express-session');
 const cookie_parser = require('cookie-parser');
 const flash = require('connect-flash')
+const passport = require('passport');
+const isAuth = require('./utils/isAuth')
+const LocalStrategy = require('passport-local');
 // override with POST having ?_method=DELETE
 // use ejs-locals for all ejs templates:
 const mongoose = require('mongoose');
@@ -20,6 +23,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => { console.log("database connected") });
 const campground = require('./models/campgrounds');
 const review = require('./models/reviews')
+const user = require('./models/user');
 const AppError = require('./utils/error');
 
 
@@ -44,7 +48,15 @@ app.use(session({
     }
   }))
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(user.authenticate()));
+
+// use static serialize and deserialize of model for passport session support
+passport.serializeUser(user.serializeUser());
+passport.deserializeUser(user.deserializeUser());
 app.use((req,res,next) =>{
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
@@ -58,7 +70,7 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
     const campgrounds =await campground.find({})
     res.render('camps',{campgrounds})
 }))
-app.get('/camps/new',(req,res) =>{
+app.get('/camps/new',isAuth,(req,res) =>{
     res.render('new') 
 })
 app.post('/camps/new',campValidator, asyncWrap(async(req,res,next) =>{
@@ -67,6 +79,46 @@ app.post('/camps/new',campValidator, asyncWrap(async(req,res,next) =>{
     await camps.save().then((doc) => {
     req.flash('success','New campground successfully created');    
     res.redirect(`/camps/${doc._id}`)}) 
+}))
+app.get('/camps/register',(req,res) =>{
+    res.render('register');
+})
+app.get('/camps/login',(req,res) =>{
+    res.render('login');
+})
+
+app.get('/camps/logout',(req,res,next) =>{
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        req.flash('success', 'Goodbye!');
+        res.redirect('/camps');
+    });
+})
+app.post('/camps/login',passport.authenticate('local',{ failureFlash:true, failureRedirect: '/camps/login' }) ,(req,res) =>{
+    req.flash('success','Your account have been successfully logged-in');
+    res.redirect('/camps')
+})
+app.post('/camps/register',asyncWrap(async(req,res,next) =>{
+    try{
+    const{username,password,email} = req.body.user
+    const users = new user({username,email});
+    const registeredUser = await user.register(users,password);
+    console.log(registeredUser)
+    req.login(registeredUser,(err) =>{
+        if(err){
+            return next(err)
+        }else{                
+    req.flash('success','Your account has been succesfully created');
+            res.redirect('/camps')
+        }
+    }) }
+    catch(e){
+        console.log(e);
+        req.flash('error',e.message);
+        res.redirect('/camps/register')
+    }
 }))
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
@@ -78,7 +130,7 @@ app.delete('/camps/:id',asyncWrap( async(req,res,next) =>{
     req.flash('success','Campground successfully Deleted'); 
     res.redirect('/camps');
 }))
-app.post('/camps/:id/review',reviewValidator,async(req,res,next) =>{
+app.post('/camps/:id/review',isAuth,reviewValidator,async(req,res,next) =>{
     const{review:revs} = req.body;
     const {id} = req.params;
     const camp = await campground.findById(id)
