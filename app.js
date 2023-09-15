@@ -9,7 +9,8 @@ const session = require('express-session');
 const cookie_parser = require('cookie-parser');
 const flash = require('connect-flash')
 const passport = require('passport');
-const isAuth = require('./utils/isAuth')
+const isAuthenticated = require('./utils/isAuth')
+const isAuthorized = require('./utils/isAuthorized')
 const LocalStrategy = require('passport-local');
 // override with POST having ?_method=DELETE
 // use ejs-locals for all ejs templates:
@@ -61,6 +62,7 @@ app.use((req,res,next) =>{
     res.locals.error = req.flash('error');
     next();
 })
+
 app.get('/',(req,res)=>{
     res.render('home')
 });
@@ -70,12 +72,13 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
     const campgrounds =await campground.find({})
     res.render('camps',{campgrounds})
 }))
-app.get('/camps/new',isAuth,(req,res) =>{
+app.get('/camps/new',isAuthenticated,(req,res) =>{
     res.render('new') 
 })
-app.post('/camps/new',campValidator, asyncWrap(async(req,res,next) =>{
+app.post('/camps/new',isAuthenticated,campValidator, asyncWrap(async(req,res,next) =>{
     const{campground:camp} = req.body;
     const camps = new campground({...camp});
+    camps.author = req.user;
     await camps.save().then((doc) => {
     req.flash('success','New campground successfully created');    
     res.redirect(`/camps/${doc._id}`)}) 
@@ -85,16 +88,6 @@ app.get('/camps/register',(req,res) =>{
 })
 app.get('/camps/login',(req,res) =>{
     res.render('login');
-})
-
-app.get('/camps/logout',(req,res,next) =>{
-    req.logout(function (err) {
-        if (err) {
-            return next(err);
-        }
-        req.flash('success', 'Goodbye!');
-        res.redirect('/camps');
-    });
 })
 app.post('/camps/login',passport.authenticate('local',{ failureFlash:true, failureRedirect: '/camps/login' }) ,(req,res) =>{
     req.flash('success','Your account have been successfully logged-in');
@@ -120,17 +113,28 @@ app.post('/camps/register',asyncWrap(async(req,res,next) =>{
         res.redirect('/camps/register')
     }
 }))
+
+app.get('/camps/logout',(req,res,next) =>{
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        req.flash('success', 'Goodbye!');
+        res.redirect('/camps');
+    });
+})
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
-    const camp = await campground.findById(id).populate('reviews')
+    const camp = await campground.findById(id).populate('reviews').populate('author');
     res.render('details',{camp})
 }))
-app.delete('/camps/:id',asyncWrap( async(req,res,next) =>{
+app.delete('/camps/:id',isAuthenticated,isAuthorized,asyncWrap( async(req,res,next) =>{
     await campground.findByIdAndDelete(req.params.id);
     req.flash('success','Campground successfully Deleted'); 
     res.redirect('/camps');
+    //isAuth
 }))
-app.post('/camps/:id/review',isAuth,reviewValidator,async(req,res,next) =>{
+app.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next) =>{
     const{review:revs} = req.body;
     const {id} = req.params;
     const camp = await campground.findById(id)
@@ -141,12 +145,14 @@ app.post('/camps/:id/review',isAuth,reviewValidator,async(req,res,next) =>{
     req.flash('success','Review successfully created');  
     res.redirect(`/camps/${doc._id}`)})    
 })
-app.get('/camps/:id/edit',asyncWrap(async(req,res,next) => {
+app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,next) => {
+    //isAuth
     const {id} = req.params;
     const camp = await campground.findById(id)
-    res.render('edit',{camp})   
+    res.render('edit',{camp})
 }))
-app.put('/camps/:id/edit',asyncWrap(async(req,res,next) => {
+app.put('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,next) => {
+    //isAuth
     const {id} = req.params;
     const{campground:camps} =req.body;
     const camp = await campground.findByIdAndUpdate(id,{...camps});
