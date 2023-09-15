@@ -62,7 +62,10 @@ app.use((req,res,next) =>{
     res.locals.error = req.flash('error');
     next();
 })
-
+app.use((req,res,next) =>{
+    console.dir(req.get('Referrer'));
+    next();
+})
 app.get('/',(req,res)=>{
     res.render('home')
 });
