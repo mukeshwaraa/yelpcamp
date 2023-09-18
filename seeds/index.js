@@ -24,7 +24,8 @@ const seedDB = async () => {
             image: 'https://source.unsplash.com/collection/483251',
             price: 5,
             description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum nemo, voluptates debitis tempora ut maxime. Odio inventore in vero et dignissimos. Consequuntur quidem beatae eaque dolor maiores atque reiciendis labore ?Inventore est totam obcaecati, non ea rerum illo asperiores? Animi dolor cumque aut quis eos et accusamus est, debitis beatae iusto expedita, quibusdam nam consectetur deserunt perferendis tenetur eveniet hic. Quas inventore impedit deleniti enim porro? At mollitia odio cupiditate dolorem officiis commodi minima pariatur harum, earum vel voluptatum nisi dicta ex.Quo, esse! Alias fuga nam eum labore culpa.",
-            author: id
+            author: id,
+            average : 0
         })
         await camp.save();
     }
