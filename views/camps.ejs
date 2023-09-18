@@ -1,4 +1,5 @@
 <% layout('../boilerplate/boilerplate') -%>
+
 <% for(camp of campgrounds){ %>
 <div class="container" >
 <div class="card mb-3 cardForward" style="cursor: pointer;"   onclick="location.href='/camps/<%=camp.id%>';" >
@@ -11,6 +12,9 @@
           <h3 class="card-title align-self-center"><%= camp.name %></h3>
           <p class="card-text "><%= camp.description %></p>
           <p class="card-text"><small class="text-body-secondary"><%= camp.location %></small></p>
+         <%  if(camp.reviews.length){ %>
+              <p class="starability-result" data-rating="<%- (Math.floor(camp.average)) %>"> </p>
+          <%  }%>
         </div>        
       </div>
     </div>

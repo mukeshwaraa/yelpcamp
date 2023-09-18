@@ -92,10 +92,19 @@
         <ul class="list-group list-group-flush">
           <% camp.reviews.forEach(rev => { %>
             <li class="list-group-item d-inline">
+              <h4><%= rev.author.username %></h4>
+            <p><%= rev.review %></p>
               <p class="starability-result" data-rating="<%=rev.rating %>">
                 Rated: 3 stars
               </p>
-            <p><h5><%= rev.review %></h5></p></li>  
+              <% if(currentUser && rev.author.id === currentUser.id) { %>
+              <form class="d-inline col-6 " action="/camps/rev/<%= camp.id%>/<%=rev.id%>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-danger col-6 offset-3">Delete Review</button>
+              </form>
+              <% } %>
+               
+            </li>  
+
           <% }); %>
           
         </ul>

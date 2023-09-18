@@ -57,13 +57,10 @@ passport.use(new LocalStrategy(user.authenticate()));
 passport.serializeUser(user.serializeUser());
 passport.deserializeUser(user.deserializeUser());
 app.use((req,res,next) =>{
-    console.log(req.originalUrl)
-    console.log(req.get('Referrer'))
-    // console.log(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login')
-    if(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login'){
-        res.locals.returnTo = req.get('Referrer')
-        console.log(res.locals.returnTo);
-    }
+    // console.log(req.originalUrl)
+    // console.log(req.get('Referrer'))
+    // // console.log(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login')
+    res.locals.returnTo = req.session.returnTo;
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -83,18 +80,20 @@ app.get('/camps/new',isAuthenticated,(req,res) =>{
 })
 app.post('/camps/new',isAuthenticated,campValidator, asyncWrap(async(req,res,next) =>{
     const{campground:camp} = req.body;
-    const camps = new campground({...camp});
+    const camps = new campground({...camp,average:0});
     camps.author = req.user;
-    await camps.save().then((doc) => {
+    await camps.save().then(() => {
     req.flash('success','New campground successfully created');    
     res.redirect(`/camps/${doc._id}`)}) 
 }))
 app.get('/camps/register',(req,res) =>{
-    res.render('register');
+    if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') && ('http://localhost:3000/camps/login')) ){
+   req.session.returnTo = req.get('Referrer') 
+    }res.render('register');
 })
 app.post('/camps/register',asyncWrap(async(req,res,next) =>{
     try{
-    console.log(res.locals.returnTo)    
+    console.log(res.locals.returnTdoco)    
     const redirectURL = res.locals.returnTo || '/camps';
     const{username,password,email} = req.body.user
     const users = new user({username,email});
@@ -114,6 +113,8 @@ app.post('/camps/register',asyncWrap(async(req,res,next) =>{
     }
 }))
 app.get('/camps/login',(req,res) =>{
+    if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') && ('http://localhost:3000/camps/login'))){
+   req.session.returnTo = req.get('Referrer')}
     res.render('login');
 })
 app.post('/camps/login',passport.authenticate('local',{ failureFlash:true, failureRedirect: '/camps/login' }) ,(req,res) =>{
@@ -135,8 +136,11 @@ app.get('/camps/logout',(req,res,next) =>{
 })
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
-
-    const camp = await campground.findById(id).populate('reviews').populate('author');
+    const camp = await campground.findById(id).populate({path:
+        'reviews',
+    populate:{  
+        path:'author'
+    }}).populate('author');
     res.render('details',{camp})
 }))
 app.delete('/camps/:id',isAuthenticated,isAuthorized,asyncWrap( async(req,res,next) =>{
@@ -154,10 +158,16 @@ app.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next)
         res.redirect('/camps')
     }
     const rev = new review({...revs});
+    rev.author = req.user;
     await rev.save();
     await camp.reviews.push(rev)
+    const val = (camp.average * ((camp.reviews.length )- 1)) + rev.rating;
+    console.log(val)
+    camp.average = val / ((camp.reviews.length)); 
     await camp.save().then((doc) =>{
-    req.flash('success','Review successfully created');  
+    req.flash('success','Review successfully created'); 
+    console.log(camp.average);
+    console.log(camp.reviews.length);
     res.redirect(`/camps/${doc._id}`)})    
 })
 app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,next) => {
@@ -177,7 +187,15 @@ app.put('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,n
         res.redirect(`/camps/${doc._id}`);
     })
 }))
-
+app.delete('/camps/rev/:id1/:id2',isAuthenticated,asyncWrap( async(req,res,next) =>{
+    const {id1,id2} = req.params;
+    console.log(id2)
+    await campground.findByIdAndUpdate(id1,{$pull: {reviews:id2}})
+    await review.findByIdAndDelete(id2);
+    req.flash('success','Review successfully Deleted'); 
+    res.redirect(`/camps/${id1}`);
+    //isAuth
+}))
 app.use((req,res,next)=>{
     next(new AppError("page not found",404))
 });
