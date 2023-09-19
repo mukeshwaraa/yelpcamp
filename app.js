@@ -75,21 +75,33 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
     const campgrounds =await campground.find({})
     res.render('camps',{campgrounds})
 }))
-app.get('/camps/new',isAuthenticated,(req,res) =>{
-    res.render('new') 
+app.get('/camps/new',(req,res) =>{
+    //isAuthenticated
+    let camp;
+        if(req.cookies.formData && req.cookies.formData.campground){
+        const{name = "",location = "",image = "",price = 0,description = ""} = req.cookies.formData.campground
+        camp = {
+            name,location,image,price,description
+        }}else
+        {
+        camp ={name:"",location:"",image:"",price:"",description:""}    
+}
+        res.render('new',{camp}); 
 })
 app.post('/camps/new',isAuthenticated,campValidator, asyncWrap(async(req,res,next) =>{
     const{campground:camp} = req.body;
     const camps = new campground({...camp,average:0});
     camps.author = req.user;
-    await camps.save().then(() => {
-    req.flash('success','New campground successfully created');    
+    await camps.save().then((doc) => {
+    req.flash('success','New campground successfully created'); 
+    res.clearCookie('formData');   
     res.redirect(`/camps/${doc._id}`)}) 
 }))
 app.get('/camps/register',(req,res) =>{
     if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') && ('http://localhost:3000/camps/login')) ){
    req.session.returnTo = req.get('Referrer') 
-    }res.render('register');
+    }
+    res.render('register');
 })
 app.post('/camps/register',asyncWrap(async(req,res,next) =>{
     try{
@@ -130,6 +142,7 @@ app.get('/camps/logout',(req,res,next) =>{
         if (err) {
             return next(err);
         }
+        res.clearCookie('formData'); 
         req.flash('success', 'Goodbye!');
         res.redirect('/camps');
     });
