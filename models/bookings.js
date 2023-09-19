@@ -4,14 +4,14 @@ const Campground = require('./campgrounds')
 
 const bookingSchema = new Schema({
     from:{
-        type:Date ,
+        type:Date,
         require:true
     },
     to:{
         type:Date,
         require:true
     },
-    camps:{
+    camp:{
         type:Schema.Types.ObjectId,
         ref:'Campground'
     }
