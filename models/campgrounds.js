@@ -1,8 +1,8 @@
-const { type } = require('express/lib/response');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Review = require('./reviews');
 const User = require('./user');
+const Booking = require('./bookings');
 const campgroundschema = new Schema({
     name:{
         require:true,
@@ -24,35 +24,30 @@ const campgroundschema = new Schema({
         require:true,
         type:String
     },
+    
+    average:{
+        type:Number,
+        require:true,
+        default:0
+    },
     reviews:[
         {
             type:Schema.Types.ObjectId,
-            ref:Review
+            ref:'Review'
         }
     ],
 
     author:{
         type:Schema.Types.ObjectId,
-        ref:User
-    },
-    average:{
-        type:Number,
-        require:true,
-        default:0
-    }
+        ref:'User'    },
+    bookings:[
+        {
+            type:Schema.Types.ObjectId,
+            ref:'Booking'
+        }
+    ]
 })
 
-campgroundschema.pre('save',async function(doc){
-    console.log("from pre")
-    console.log(doc);
-
-})
-campgroundschema.post('save',async function(doc){
-    console.log("from post")
-
-    console.log(doc);
-
-})
 campgroundschema.pre('findOneAndDelete',async function(doc){
     console.log("from pre")
     console.log(doc);
