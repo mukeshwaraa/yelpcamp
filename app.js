@@ -164,7 +164,6 @@ app.get('/camps/showBooks',asyncWrap( async(req,res,next) =>{
                 path:'camp'
             }
     })
-        console.log(users.bookings);
         res.render('bookinglist',{users})
     }
 }))
