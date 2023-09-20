@@ -12,7 +12,7 @@ const Campground = require('../models/campgrounds');
 
 
 const sample = array => array[Math.floor(Math.random() * array.length)];
-const id = "6504520c2a8f125910a9d75a";
+const id = "6509d95f03cb4fdc5b542d73";
 
 const seedDB = async () => {
     await Campground.deleteMany({});

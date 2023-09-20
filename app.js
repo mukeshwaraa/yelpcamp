@@ -5,6 +5,7 @@ const methodOverride = require('method-override');
 const asyncWrap = require('./utils/asyncWrap'); 
 const campValidator = require('./utils/campValidation');
 const reviewValidator = require('./utils/reviewValidator');
+const bookingValidator = require('./utils/bookingValidator')
 const session = require('express-session');
 const cookie_parser = require('cookie-parser');
 const flash = require('connect-flash')
@@ -25,6 +26,7 @@ db.once('open', () => { console.log("database connected") });
 const campground = require('./models/campgrounds');
 const review = require('./models/reviews')
 const user = require('./models/user');
+const booking = require('./models/bookings')
 const AppError = require('./utils/error');
 
 
@@ -75,6 +77,7 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
     const campgrounds =await campground.find({})
     res.render('camps',{campgrounds})
 }))
+
 app.get('/camps/new',(req,res) =>{
     //isAuthenticated
     let camp;
@@ -103,6 +106,7 @@ app.get('/camps/register',(req,res) =>{
     }
     res.render('register');
 })
+
 app.post('/camps/register',asyncWrap(async(req,res,next) =>{
     try{
     console.log(res.locals.returnTdoco)    
@@ -147,6 +151,46 @@ app.get('/camps/logout',(req,res,next) =>{
         res.redirect('/camps');
     });
 })
+app.get('/camps/showBooks',asyncWrap( async(req,res,next) =>{
+    if(!req.user){
+        console.log(req.user);
+        req.flash('error','You need to be looged in to see your bookings')
+        return res.redirect('/camps/login');
+    }else{
+        const {id} = req.user;
+        const users =await user.findById(id).populate({
+            path:'bookings',
+            populate:{
+                path:'camp'
+            }
+    })
+        res.render('bookinglist',{users})
+    }
+}))
+app.get('/camps/book/:id',asyncWrap( async(req,res,next) =>{
+    const {id} = req.params;
+    const camp = await campground.findById(id);
+   res.render('booking',{camp})
+}))
+app.post('/camps/book/:id',isAuthenticated,bookingValidator,asyncWrap( async(req,res,next) =>{
+    const {booking:books} = req.body;
+    const{id} = req.params;
+    const {id:id1} = req.user;
+    console.log(id1);
+    const users = await user.findById(id1);
+    const ca = await campground.findById(id);
+    const book = new booking({...books});
+    book.camp = id;
+    await book.save().then(async(doc) =>{
+        req.flash('success','Booking successfully created')
+        ca.bookings.push(book);
+        await ca.save();
+        users.bookings.push(book);
+        await users.save();
+        res.redirect('/camps')
+    });
+
+}))
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     const {id} = req.params;
     const camp = await campground.findById(id).populate({path:

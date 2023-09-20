@@ -36,10 +36,10 @@ const campgroundschema = new Schema({
             ref:'Review'
         }
     ],
-
     author:{
         type:Schema.Types.ObjectId,
-        ref:'User'    },
+        ref:'User'    
+    },
     bookings:[
         {
             type:Schema.Types.ObjectId,

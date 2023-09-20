@@ -1,0 +1,54 @@
+<% layout('../boilerplate/boilerplate') -%>
+<div class="container">
+
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-center  mb-1 rounded " >
+    <h3 class="card-title"><%= camp.name %></h3>
+  </div>
+  <div class="text-center">
+  <img src="<%= camp.image %>" class="rounded" alt="..." style="max-width:100%; max-height: 50vh;" >
+</div>
+  <div class="card-body">
+    <p class="card-text"><%= camp.description %></p>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><h4><%= camp.location %></h4></li>
+    <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
+    <li class="list-group-item">
+        <div class="card-body mb-2">
+          <div class="row">
+            <form class="d-inline col-6 offset-3 needs-validation" action="/camps/book/<%= camp.id%>" method="POST" novalidate>
+              <div class="row">
+                  <div class="col-6 mb-3 ">
+                  <label for="inputAddress" class="form-label">From</label>
+                  <input type="date" class="form-control calendarFrom" id="inputAddress"  required name="booking[from]" >
+                  <div class="valid-feedback">
+                    Looks good!
+                  </div>
+                  <div class="invalid-feedback">
+                    Please tell us From when you want to book the camp 
+                  </div>
+                </div>
+                <div class="col-6 mb-3">
+                  <label for="inputAddress" class="form-label">To</label>
+                  <input disabled type="date" class="form-control calendarTo" id="inputAddress"  required name="booking[to]" >
+                  <div class="valid-feedback">
+                    Looks good!
+                  </div>
+                  <div class="invalid-feedback">
+                    Please tell us until when you want to book the camp
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary col-12">Book Campground</button>
+            </form>
+              </div>
+          </div></li>
+  </ul>
+  </div>
+</div>
+
+
+
+
+     

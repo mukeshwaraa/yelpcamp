@@ -1,0 +1,29 @@
+<% layout('../boilerplate/boilerplate') -%>
+<% if(users.bookings.length){ %>
+<% for(booking of users.bookings ){ %>
+<div class="container" >
+<div class="card mb-3 cardForward" style="cursor: pointer;"   onclick="location.href='/camps/<%=booking.camp.id%>';" >
+    <div class="row g-0 p-1">
+      <div class="col-md-4 text-center align-self-center">
+        <img src="<%= booking.camp.image %>" class="img-fluid rounded-start" alt="...">
+      </div>
+      <div class="col-md-8 d-flex flex-column">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h3 class="card-title align-self-center"><%= booking.camp.name %></h3>
+          <p class="card-text "><%= booking.camp.description %></p>
+          <p class="card-text"><small class="text-body-secondary"><%= booking.camp.location %></small></p>
+          <h6>Booked From <%= booking.from.toLocaleDateString() %> To <%= booking.to.toLocaleDateString() %> </h6>
+          <%  if(booking.camp.reviews.length){ %>
+              <p class="starability-result" data-rating="<%- (Math.floor(booking.camp.average)) %>"> </p>
+          <%  }%>
+        </div>        
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+<% } else { %>
+    <div class="container" >
+        <h1 class="text-center">No bookings Yet</h1>
+    </div>
+ <% } %>
