@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV !== "production"){
+    require('dotenv').config();
+}
+
 const express = require('express');
 const path = require('path');
 const engine = require('ejs-mate');
@@ -13,6 +17,10 @@ const passport = require('passport');
 const isAuthenticated = require('./utils/isAuth')
 const isAuthorized = require('./utils/isAuthorized')
 const LocalStrategy = require('passport-local');
+const multer = require('multer');
+const {storage,cloudinary} = require('./cloudinary/index')
+const upload = multer({storage})
+// import {v2 as cloudinary} from 'cloudinary';
 // override with POST having ?_method=DELETE
 // use ejs-locals for all ejs templates:
 const mongoose = require('mongoose');
@@ -28,7 +36,6 @@ const review = require('./models/reviews')
 const user = require('./models/user');
 const booking = require('./models/bookings')
 const AppError = require('./utils/error');
-
 
 
 const app =express();
@@ -78,22 +85,24 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
     res.render('camps',{campgrounds})
 }))
 
-app.get('/camps/new',(req,res) =>{
+app.get('/camps/new',isAuthenticated,(req,res) =>{
     //isAuthenticated
     let camp;
         if(req.cookies.formData && req.cookies.formData.campground){
-        const{name = "",location = "",image = "",price = 0,description = ""} = req.cookies.formData.campground
+        const{name = "",location = "",price = 0,description = ""} = req.cookies.formData.campground
         camp = {
             name,location,image,price,description
         }}else
         {
-        camp ={name:"",location:"",image:"",price:"",description:""}    
+        camp ={name:"",location:"",price:"",description:""}    
 }
         res.render('new',{camp}); 
 })
-app.post('/camps/new',isAuthenticated,campValidator, asyncWrap(async(req,res,next) =>{
+app.post('/camps/new',isAuthenticated,upload.array('image'),campValidator,asyncWrap(async(req,res,next) =>{
+    console.log("hai")
     const{campground:camp} = req.body;
     const camps = new campground({...camp,average:0});
+    camps.images = req.files.map(f => ({ path:f.path,filename: f.filename}))
     camps.author = req.user;
     await camps.save().then((doc) => {
     req.flash('success','New campground successfully created'); 
@@ -163,7 +172,7 @@ app.get('/camps/showBooks',asyncWrap( async(req,res,next) =>{
             populate:{
                 path:'camp'
             }
-    })
+    })  
         res.render('bookinglist',{users})
     }
 }))
@@ -234,11 +243,21 @@ app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,n
 
     res.render('edit',{camp})
 }))
-app.put('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,next) => {
+app.put('/camps/:id/edit',isAuthenticated,isAuthorized,upload.array('image'),asyncWrap(async(req,res,next) => {
     //isAuth
     const {id} = req.params;
     const{campground:camps} =req.body;
     const camp = await campground.findByIdAndUpdate(id,{...camps});
+    imgs = req.files.map(f => ({ path:f.path,filename: f.filename}))
+    if(req.body.deleteImages){
+        for(imggg of req.body.deleteImages){
+            cloudinary.uploader.destroy(imggg);
+        }
+        await camp.updateOne({$pull : {images:{filename:{$in: [...req.body.deleteImages]}}}})
+    }
+    // await campground.findByIdAndUpdate(id1,{$pull: {reviews:id2}})
+    camp.images.push(...imgs)
+    camp.images.$pull
     camp.save().then((doc) => {
     req.flash('success','Campground changes has been successfully saved'); 
         res.redirect(`/camps/${doc._id}`);

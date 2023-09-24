@@ -5,11 +5,11 @@ const campValidator = function (req, res, next) {
     campground: joi.object({
       name: joi.string().required(),
       location: joi.string().required(),
-      image: joi.string().required(),
       description: joi.string().required(),
       price: joi.number().required().min(0),
-    }).required()
-  })
+    }).required(),
+    deleteImages: joi.array()
+  });
   const { error } = campgroundSchema.validate(req.body);
   if (!error) {
     return next()

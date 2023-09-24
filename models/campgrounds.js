@@ -3,6 +3,22 @@ const Schema = mongoose.Schema;
 const Review = require('./reviews');
 const User = require('./user');
 const Booking = require('./bookings');
+
+const ImageSchema = new Schema(
+    {
+        path:{       
+            require:true,
+            type:String
+     },
+        filename:{       
+            require:true,
+            type:String
+     }
+    });
+
+    ImageSchema.virtual('thumbnailURL').get(function(){
+        return this.path.replace('/upload','/upload/t_media_lib_thumb')
+    }) 
 const campgroundschema = new Schema({
     name:{
         require:true,
@@ -20,10 +36,7 @@ const campgroundschema = new Schema({
         require:true,
         type:Number
     },
-    image:{
-        require:true,
-        type:String
-    },
+    images:[ImageSchema],
     
     average:{
         type:Number,
@@ -65,6 +78,7 @@ campgroundschema.post('findOneAndDelete',async function(doc){
                     })
 
 })
+
 
 const campground = mongoose.model("Campground",campgroundschema);
 
