@@ -18,6 +18,7 @@ const isAuthenticated = require('./utils/isAuth')
 const isAuthorized = require('./utils/isAuthorized')
 const LocalStrategy = require('passport-local');
 const multer = require('multer');
+const mongoSanitize = require('express-mongo-sanitize')
 const {storage,cloudinary} = require('./cloudinary/index')
 const upload = multer({storage})
 // import {v2 as cloudinary} from 'cloudinary';
@@ -39,6 +40,7 @@ const AppError = require('./utils/error');
 
 
 const app =express();
+app.use(mongoSanitize())
 app.engine('ejs', engine);
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
@@ -196,7 +198,7 @@ app.post('/camps/book/:id',isAuthenticated,bookingValidator,asyncWrap( async(req
         await ca.save();
         users.bookings.push(book);
         await users.save();
-        res.redirect('/camps')
+        res.redirect('/camps/showbooks')
     });
 
 }))
