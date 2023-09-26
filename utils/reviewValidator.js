@@ -1,12 +1,7 @@
 const joi = require('joi');
 const AppError = require('./error')
+const {reviewSchema} = require('./schemas.js')
 const reviewValidator = function (req, res, next) {
-  const reviewSchema = joi.object({
-    review: joi.object({
-      review: joi.string().required(),
-      rating: joi.number().required().min(1),
-    }).required()
-  })
   const { error } = reviewSchema.validate(req.body);
   if (!error) {
     return next()

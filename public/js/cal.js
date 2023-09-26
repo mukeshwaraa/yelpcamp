@@ -1,5 +1,6 @@
 const calFrom = document.querySelector('.calendarFrom');
 const calTo = document.querySelector('.calendarTo');
+const change = document.querySelectorAll('#changer')
 const date = new Date();
 let day = date.getDate() + 1;
 day = day > 9 ? day : "0"+day
@@ -18,6 +19,7 @@ function setAttribute(e,attri){
     });
  
 }
+
 if(calFrom){
 calFrom.addEventListener('change',() => hai(attri))
 setAttribute(calFrom,attri)
@@ -28,3 +30,12 @@ function hai(a){
     calTo.setAttribute('max', a.max)
 
 }}
+if(change){
+function load(to){
+    console.log("hai")
+    location.href = to;
+    } 
+for(c of change){
+let to = c.getAttribute('too')
+c.addEventListener('click',() => load(to))}
+}
