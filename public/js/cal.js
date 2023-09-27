@@ -20,6 +20,7 @@ function setAttribute(e,attri){
  
 }
 
+
 if(calFrom){
 calFrom.addEventListener('change',() => hai(attri))
 setAttribute(calFrom,attri)

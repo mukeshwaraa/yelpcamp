@@ -1,6 +1,5 @@
 <% layout('../boilerplate/boilerplate') -%>
 <div class="container">
-
 <div class="card mb-3">
   <div class="card-header d-flex justify-content-center  mb-1 rounded " >
     <h3 class="card-title"><%= camp.name %></h3>
@@ -25,11 +24,12 @@
   </button>
   <% } %>
 </div>
-  <div class="card-body">
+  <div class="card-body mb-3">
     <p class="card-text"><%= camp.description %></p>
   </div>
   <ul class="list-group list-group-flush">
-    <li class="list-group-item"><h4><%= camp.location %></h4></li>
+    <li class="list-group-item"><div id="map"></div></li>
+    <li class="list-group-item"><h4><%= camp.location.fullAddress %></h4></li>
     <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
     <li class="list-group-item"><a href="/camps/book/<%= camp.id%>" class="btn btn-outline-primary col-6 offset-3">Book this Camp</a></li>
     <% if(currentUser && currentUser.username === camp.author.username){ %>

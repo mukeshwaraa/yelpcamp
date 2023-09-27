@@ -29,7 +29,7 @@
         <div class="card-body d-flex flex-column justify-content-between">
           <h3 class="card-title align-self-center"><%= camp.name %></h3>
           <p class="card-text "><%= camp.description %></p>
-          <p class="card-text"><small class="text-body-secondary"><%= camp.location %></small></p>
+          <p class="card-text"><small class="text-body-secondary"><%= camp.location.fullAddress %></small></p>
          <%  if(camp.reviews.length){ %>
               <p class="starability-result" data-rating="<%- (Math.floor(camp.average)) %>"> </p>
           <%  }%>

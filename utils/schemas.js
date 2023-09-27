@@ -30,11 +30,15 @@ const reviewSchema = joi.object({
   const campgroundSchema = joi.object({
     campground: joi.object({
       name: joi.string().required().escapeHTML(),
-      location: joi.string().required().escapeHTML(),
       description: joi.string().required().escapeHTML(),
       price: joi.number().required().min(0),
     }).required(),
-    deleteImages: joi.array()
+    deleteImages: joi.array(),
+    address:joi.object({
+      city: joi.string().required().escapeHTML(),
+      state: joi.string().required().escapeHTML(),
+      country: joi.string().required().escapeHTML()
+    }).required()
   })
 
   const bookingSchema = joi.object({

@@ -13,16 +13,6 @@
         Please choose a name For your Camp
       </div>
   </div>
-    <div class="col-12">
-      <label for="inputAddress" class="form-label">Location</label>
-      <input type="text" class="form-control" id="inputAddress"  value="<%= camp.location %>"  required name="campground[location]" placeholder="1234 Main St">
-      <div class="valid-feedback">
-        Looks good!
-      </div>
-      <div class="invalid-feedback">
-        Please tell us where we can find your Camp
-      </div>
-    </div>
     <div class="mb-3 col-12 ">
         <label for="image" class="form-label">Add Image</label>
         <input type="file" class="form-control" id="image" multiple name="image" >
@@ -47,6 +37,37 @@
             Is this awesome camp available for free
           </div>
     </div>
+    </div><div class="row mb-3">
+      <div class="col-4">
+        <label for="inputAddress1" class="form-label">City</label>
+        <input type="text" class="form-control" id="inputAddress1" required name="address[city]" value="<%= camp.location.city %>" placeholder="1234 Main St">
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please tell us where we can find your Camp
+        </div>
+      </div>
+      <div class="col-4">
+        <label for="inputAddress2" class="form-label">State</label>
+        <input type="text" class="form-control" id="inputAddress2" required name="address[state]" value="<%= camp.location.state %>" placeholder="1234 Main St">
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please tell us where we can find your Camp
+        </div>
+      </div>
+      <div class="col-4">
+        <label for="inputAddress3" class="form-label">Country</label>
+        <input type="text" class="form-control" id="inputAddress3" required name="address[country]" value="<%= camp.location.country %>" placeholder="1234 Main St">
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please tell us where we can find your Camp
+        </div>
+      </div>
     </div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
