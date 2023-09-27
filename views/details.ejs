@@ -1,4 +1,5 @@
 <% layout('../boilerplate/boilerplate') -%>
+<script src="https://apis.mappls.com/advancedmaps/api/<%= mapToken %>/map_sdk?layer=vector&v=3.0&callback=initMap1" defer async crossorigin="anonymous"></script>
 <div class="container">
 <div class="card mb-3">
   <div class="card-header d-flex justify-content-center  mb-1 rounded " >
@@ -6,6 +7,7 @@
   </div>
 <div id="carouselExample" class="carousel slide">
   <div class="carousel-inner bg-dark-subtle">
+    
       <% camp.images.forEach((img,i) => { %>
         <div class="carousel-item  <%= i == 0? 'active': '' %>">
         <a href="<%= img.path %>"><img src="<%= img.path %>" class="img-fluid mx-auto d-block" alt="..." style="min-height: 50dvh; max-height: 50dvh;" >
@@ -23,6 +25,7 @@
     <span class="visually-hidden">Next</span>
   </button>
   <% } %>
+
 </div>
   <div class="card-body mb-3">
     <p class="card-text"><%= camp.description %></p>
@@ -30,7 +33,7 @@
   <ul class="list-group list-group-flush">
     <li class="list-group-item"><div id="map"></div></li>
     <li class="list-group-item"><h4><%= camp.location.fullAddress %></h4></li>
-    <li class="list-group-item"><h5>$<%= camp.price%>/night</h5></li>
+    <li class="list-group-item"><h5>₹<%= camp.price%>/night</h5></li>
     <li class="list-group-item"><a href="/camps/book/<%= camp.id%>" class="btn btn-outline-primary col-6 offset-3">Book this Camp</a></li>
     <% if(currentUser && currentUser.username === camp.author.username){ %>
     <li class="list-group-item">
@@ -136,5 +139,8 @@
     <% } %>
   </div>
 </div>
-
+<script>
+  const c = <%- JSON.stringify(camp) %>
+</script>
+<script src="/js/map.js" crossorigin="anonymous"></script>
 

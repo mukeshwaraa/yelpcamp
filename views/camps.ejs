@@ -1,8 +1,9 @@
 <% layout('../boilerplate/boilerplate') -%>
-
+<script src="https://apis.mappls.com/advancedmaps/api/<%= mapToken %>/map_sdk?layer=vector&v=3.0&callback=initMap1" defer async></script>
+<div id="map" style="margin-top: -15px; margin-bottom: 10px;"></div>        
 <% for(camp of campgrounds){ %>
 <div class="container" >
-<div class="card mb-3 cardForward bg-dark-subtle"  >
+<div class="card mb-3 cardForward bg-white-subtle"  >
     <div class="row g-0 p-1">
       <div class="col-md-4">
         <div id="<%= camp.id %>" class="carousel slide">
@@ -24,6 +25,7 @@
           </button>
           <% } %>
         </div>
+
       </div>
       <div class="col-md-8 d-flex flex-column " style="cursor: pointer;"  id="changer" too="/camps/<%=camp.id%>">
         <div class="card-body d-flex flex-column justify-content-between">
@@ -39,3 +41,7 @@
   </div>
 </div>
 <% } %>
+<script>
+  const cs = <%- JSON.stringify(campgrounds)%>
+</script>
+<script src="/js/clustermap.js" crossorigin="anonymous"></script>

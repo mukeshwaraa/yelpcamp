@@ -81,6 +81,8 @@ const styleSrcUrls = [
     "https://cdn.jsdelivr.net",
 ];
 const connectSrcUrls = [
+    "https://mt1.mapmyindia.com/",
+     "https://mt2.mapmyindia.com/",
     "https://mt4.mapmyindia.com/",
     "https://mt5.mapmyindia.com/",
       "https://mt3.mapmyindia.com",
@@ -142,6 +144,7 @@ app.use((req,res,next) =>{
     // console.log(req.originalUrl)
     // console.log(req.get('Referrer'))
     // // console.log(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login')
+    res.locals.mapToken = process.env.map_token
     res.locals.returnTo = req.session.returnTo;
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
@@ -252,7 +255,7 @@ app.get('/camps/showBooks',asyncWrap( async(req,res,next) =>{
         res.render('bookinglist',{users})
     }
 }))
-app.get('/camps/book/:id',asyncWrap( async(req,res,next) =>{
+app.get('/camps/book/:id',isAuthenticated, asyncWrap( async(req,res,next) =>{
     const {id} = req.params;
     const camp = await campground.findById(id);
    res.render('booking',{camp})

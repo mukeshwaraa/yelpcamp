@@ -2,14 +2,15 @@
 var map;
 function initMap1() {
   map = new mappls.Map('map', {
-    center: [28.61, 77.23],
+    center: [c.location.lat,c.location.long],
     zoomControl: true,
-    location: true
+    location: true,
+    
   });
   Marker1 = new mappls.Marker({
     map: map,
-    position: {"lat": 28.519467,"lng": 77.223150 },
+    position: {"lat": c.location.lat,"lng": c.location.long },
     fitbounds: true,
-    popupHtml: '<div>MapmyIndia</div>'
+    popupHtml: `<div>${c.name}</div>`
   });
 }

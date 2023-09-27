@@ -33,7 +33,6 @@ function hai(a){
 }}
 if(change){
 function load(to){
-    console.log("hai")
     location.href = to;
     } 
 for(c of change){

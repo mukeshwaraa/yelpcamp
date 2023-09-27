@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const Review = require('./reviews');
 const User = require('./user');
 const Booking = require('./bookings');
+const {storage,cloudinary} = require('../cloudinary/index')
 const { Double } = require('bson');
 const { double } = require('webidl-conversions');
 
@@ -93,11 +94,12 @@ const campgroundschema = new Schema({
     ]
 })
 
-campgroundschema.pre('findOneAndDelete',async function(doc){
-   
-
-})
 campgroundschema.post('findOneAndDelete',async function(doc){
+    if(doc.images.length){
+        for(d of doc.images){
+           cloudinary.uploader.destroy(d.filename);
+        }
+    }
     await Review.deleteMany(
         {
             _id:{
