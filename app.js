@@ -19,6 +19,7 @@ const isAuthorized = require('./utils/isAuthorized')
 const LocalStrategy = require('passport-local');
 const multer = require('multer');
 const axios = require('axios')
+const mongoSanitize = require('express-mongo-sanitize')
 const {storage,cloudinary} = require('./cloudinary/index')
 const upload = multer({storage})
 // import {v2 as cloudinary} from 'cloudinary';
@@ -37,6 +38,7 @@ const review = require('./models/reviews')
 const user = require('./models/user');
 const booking = require('./models/bookings')
 const AppError = require('./utils/error');
+const { object } = require('joi');
 const { object } = require('joi');
 
 
@@ -62,6 +64,7 @@ app.use(session({
 app.use(flash());
 const scriptSrcUrls = [
     "https://apis.mappls.com/",
+    "https://apis.mappls.com/",
     "https://stackpath.bootstrapcdn.com/",
     "https://apis.mappls.com/advancedmaps/api",
     "https://kit.fontawesome.com/",
@@ -71,6 +74,8 @@ const scriptSrcUrls = [
 const styleSrcUrls = [
     "https://apis.mappls.com/",
     "https://apis.mappls.com/advancedmaps/api/4c6f6b50-3142-4e8d-84e8-bca1af005d35/map_sdk",
+    "https://apis.mappls.com/",
+    "https://apis.mappls.com/advancedmaps/api/4c6f6b50-3142-4e8d-84e8-bca1af005d35/map_sdk",
     "https://kit-free.fontawesome.com/",
     "https://stackpath.bootstrapcdn.com/",
     "https://fonts.googleapis.com/",
@@ -78,6 +83,15 @@ const styleSrcUrls = [
     "https://cdn.jsdelivr.net",
 ];
 const connectSrcUrls = [
+    "https://mt4.mapmyindia.com/",
+    "https://mt5.mapmyindia.com/",
+      "https://mt3.mapmyindia.com",
+    "https://www.mappls.com/apis/",
+    "https://apis.mapmyindia.com/",
+    "https://apis.mappls.com/",
+    "https://apis.mappls.com/",
+    "https://apis.mappls.com/",
+     "https://api.mapbox.com/",
     "https://mt4.mapmyindia.com/",
     "https://mt5.mapmyindia.com/",
       "https://mt3.mapmyindia.com",
