@@ -1,6 +1,6 @@
 <% layout('../boilerplate/boilerplate') -%>
 <div class="container">
-    <form class="row g-3  needs-validation" method="POST" action="/camps/new" novalidate enctype="multipart/form-data">
+     <form class="row g-3 needs-validation  " method="POST" action="/camps/new" novalidate enctype="multipart/form-data">
       <div class="col-8 offset-2" >
       <h1 class="text-center">Add your Campground</h1>
       <div class="mb-3">
@@ -13,16 +13,6 @@
           Please choose a name For your Camp
         </div>
     </div>
-      <div class="mb-3 col-12" >
-        <label for="image" class="form-label">Upload Image</label>
-        <input type="file"class="form-control" id="image" name="image" value="<%= camp.image %>" required multiple>
-        <div class="valid-feedback">
-          Looks good!
-        </div>
-        <div class="invalid-feedback">
-          Please let us aw-struck from the look of your Camp
-        </div>  
-      </div>
       <!-- <div class="mb-3 col-12 ">
           <label for="image" class="form-label">Image URL</label>
           <input type="text" class="form-control" id="image" name="campground[image]" value="<%= camp.image %>" required>
@@ -51,7 +41,7 @@
       <div class="row mb-3">
         <div class="col-4">
           <label for="inputAddress1" class="form-label">City</label>
-          <input type="text" class="form-control" id="inputAddress1" required name="address[city]" value="<%= camp.location %>" placeholder="1234 Main St">
+          <input type="text" class="form-control" id="inputAddress1" required name="address[city]" value="<%= camp.location.city %>" placeholder="1234 Main St">
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -61,7 +51,7 @@
         </div>
         <div class="col-4">
           <label for="inputAddress2" class="form-label">State</label>
-          <input type="text" class="form-control" id="inputAddress2" required name="address[state]" value="<%= camp.location %>" placeholder="1234 Main St">
+          <input type="text" class="form-control" id="inputAddress2" required name="address[state]" value="<%= camp.location.state %>" placeholder="1234 Main St">
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -71,7 +61,7 @@
         </div>
         <div class="col -4">
           <label for="inputAddress3" class="form-label">Country</label>
-          <input type="text" class="form-control" id="inputAddress3" required name="address[country]" value="<%= camp.location %>" placeholder="1234 Main St">
+          <input type="text" class="form-control" id="inputAddress3" required name="address[country]" value="<%= camp.location.country %>" placeholder="1234 Main St">
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -89,6 +79,17 @@
             <div class="invalid-feedback">
               Please tell us about your Camp
             </div>  
+      </div>
+      
+      <div class="mb-3 col-12" >
+        <label for="image" class="form-label">Upload Image(Max 3 files)</label>
+        <input type="file"class="form-control" id="image" name="image"  value="<%= camp.image %>"required  multiple>
+        <div class="invalid-feedback">
+          Please let us aw-struck from the look of your Camp
+        </div>
+        <div class="maxImages">
+         Maximum 3 images Only Allowed
+        </div>  
       </div>
       <div class="col-12 mb-3">
         <button type="submit" class="btn btn-success col-6 offset-3">Add Your Campground</button>

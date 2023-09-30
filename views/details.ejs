@@ -39,9 +39,9 @@
     <li class="list-group-item">
       <div class="card-body mb-2">
         <div class="row">
-          <a href="/camps/<%= camp.id%>/edit" class="btn btn-info col-6">Edit Campground</a>
+          <a href="/camps/<%= camp.id%>/edit" class="btn btn-info col-6 p-2">Edit Campground</a>
           <form class="d-inline col-6" action="/camps/<%= camp.id%>?_method=DELETE" method="POST">
-            <button type="submit" class="btn btn-danger col-12">Delete Campground</button>
+            <button type="submit" class="btn btn-danger col-12 p-2">Delete Campground</button>
           </form>
             
           </div>
@@ -50,7 +50,7 @@
   </ul>
   </div>
   <div class="card mb-3">
-      <% if(currentUser){ %>  
+     
   <div class="card-header mb-3 rounded bg-white">
       <h2 class="card-title text-center">Add your Reviews</h2>
     </div>
@@ -70,18 +70,12 @@
           <label for="first-rate4" title="Very good">4 stars</label>
           <input type="radio" id="first-rate5" name="review[rating]" value="5" />
           <label for="first-rate5" title="Amazing">5 stars</label>
-          <div class="valid-feedback">
-            Looks good!
-          </div>
-          <div class="invalid-feedback">
-            Please tell us about your Camp
-          </div>  
-        </div> 
         </fieldset>
+        </div> 
      
       <div class="mb-3  col-8 offset-2">
-        <label for="description" class="form-label">Description</label>
-        <textarea  class="form-control" id="description"  required name="review[review]" rows="3"></textarea>
+        <label for="description" class="form-label">Your View</label>
+        <textarea  class="form-control" id="description"  required name="review[review]" rows="3"><%= revs?.review%></textarea>
         <div class="valid-feedback">
             Looks good!
           </div>
@@ -94,16 +88,6 @@
       <button type="submit" class="btn btn-success col-6 offset-3">Add Your Review</button>
     </div>
   </form>
-  <% }else{ %>
-    <div class="card-header mb-3 rounded bg-white">
-      <h2 class="card-title text-center">Please login to Add your Review</h2>
-    </div>
-    <div class="col-12 text-center mb-3">  
-      <a href="/camps/login" class="btn btn-info col-6">Login</a>  
-    </div>
-  
-    <% } %>
-    </div>
     
     <div class="card mb-3">
       <div class="card-header">

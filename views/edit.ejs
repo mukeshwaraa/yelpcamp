@@ -13,16 +13,6 @@
         Please choose a name For your Camp
       </div>
   </div>
-    <div class="mb-3 col-12 ">
-        <label for="image" class="form-label">Add Image</label>
-        <input type="file" class="form-control" id="image" multiple name="image" >
-        <div class="valid-feedback">
-            Looks good!
-          </div>
-          <div class="invalid-feedback">
-            Please let us aw-struck from the look of your Camp
-          </div>  
-    </div>
       <div class="mb-3">
         
         <label for="price" class="form-label">Price</label>
@@ -89,6 +79,13 @@
             
           </div>
         <% }) %>
+    </div>
+    <div class="mb-3 col-12 ">
+        <label for="image" class="form-label">Add Image</label>
+        <input type="file" class="form-control" id="image" multiple name="image" >
+         <div class="maxImages">
+          Maximum 3 images Only Allowed
+         </div>  
     </div>
     <div class="col-12 mb-3">
       <button type="submit" class="btn btn-success col-6 offset-3">Submit</button>
