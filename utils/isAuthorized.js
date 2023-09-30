@@ -1,5 +1,5 @@
 const campground = require('../models/campgrounds');
-const isAuth =async function(req,res,next){
+const isAuthorized =async function(req,res,next){
     const {id} = req.params;
     const camp = await campground.findById(id)
     if(camp.author.equals(req.user._id)){
@@ -12,4 +12,4 @@ const isAuth =async function(req,res,next){
 }
 
 
-module.exports = isAuth;
+module.exports = isAuthorized;

@@ -7,21 +7,66 @@ const path = require('path');
 const engine = require('ejs-mate');
 const methodOverride = require('method-override'); 
 const asyncWrap = require('./utils/asyncWrap'); 
-const campValidator = require('./utils/campValidation');
+const {campValidator,campValidators} = require('./utils/campValidation');
 const reviewValidator = require('./utils/reviewValidator');
 const bookingValidator = require('./utils/bookingValidator')
 const session = require('express-session');
 const cookie_parser = require('cookie-parser');
 const flash = require('connect-flash')
 const passport = require('passport');
-const isAuthenticated = require('./utils/isAuth')
+const {isAuthenticated,isAuthenticatedd} = require('./utils/isAuth')
 const isAuthorized = require('./utils/isAuthorized')
 const LocalStrategy = require('passport-local');
 const multer = require('multer');
 const axios = require('axios')
 const mongoSanitize = require('express-mongo-sanitize')
 const {storage,cloudinary} = require('./cloudinary/index')
-const upload = multer({storage})
+const cupload = function(req,res,next){
+    const upload = multer({
+        storage:storage,
+        fileFilter: function(req, file, cb){
+            // console.log(req.body);
+            isAuthenticatedd(req,file,cb)
+            campValidator(req,file,cb)
+            // checkFileType(file, cb);
+        }
+            }).array('image',3);
+    upload(req,res,function(err){
+        // console.log(err)
+        if(err instanceof multer.MulterError){
+            if(err.message == 'Unexpected field'){
+                return next(new AppError("Exceedind max number files allowed in images",500))}
+                else{
+                    return next(new AppError(err.message,500))
+                }
+        }else if(err){
+            if(err.message == 'you need to be logged in'){  
+             res.cookie('formData',req.body)
+            req.flash('error','you need to be logged in')
+            return res.redirect('/camps/login')}else{
+            return next(new AppError(err.message,err.status))}
+        }else{
+            return next();
+        }
+    })
+}
+const tokenfetcher = async function(){
+try{
+    m = await map.findById(process.env.map_id)
+    tok = m.token
+    return tok;
+}
+    catch(e){
+        console.log(e);
+    }
+
+}
+const expiryfetcher = async function(){
+    m = await map.findById(process.env.map_id)
+    exp = m.expires
+    return exp;
+
+}
 const helmet = require('helmet')
 // import {v2 as cloudinary} from 'cloudinary';
 // override with POST having ?_method=DELETE
@@ -38,10 +83,15 @@ const campground = require('./models/campgrounds');
 const review = require('./models/reviews')
 const user = require('./models/user');
 const booking = require('./models/bookings')
+const map = require('./models/map')
 const AppError = require('./utils/error');
 const { object } = require('joi');
-
-
+let map_token;
+let token_expiry;
+let fetcher = async()=>{
+    map_token = await tokenfetcher();
+    token_expiry = await expiryfetcher();
+}
 const app =express();
 app.use(mongoSanitize())
 app.engine('ejs', engine);
@@ -140,11 +190,36 @@ const getAddress = async function(location){
         console.log(e)
     }
 }
+const url = 'https://outpost.mappls.com/api/security/oauth/token'
+const config = {headers:{'Content-Type' : 'application/x-www-form-urlencoded'},
+params:{grant_type:"client_credentials",client_id:'33OkryzDZsL6Eu0TEt2Ub-8I0OdrwHDBDhiEeWkzeCoAdzEZYUJ0i_lqNeBlxvwzBUHOVD0Xm2uYxi2WeLappA==',client_secret:process.env.map_client_secret}}
+
+app.use(async(req,res,next) =>{
+    // console.log("token expiring",token_expiry)
+    if(Date.now() > token_expiry){
+        console.log('hai')
+        // console.log(Date.now()) 
+        try{
+        const response = await axios.post(url,{headers:{'Content-Type' : 'application/x-www-form-urlencoded'}},{params:{grant_type:"client_credentials",client_id:'33OkryzDZsL6Eu0TEt2Ub-8I0OdrwHDBDhiEeWkzeCoAdzEZYUJ0i_lqNeBlxvwzBUHOVD0Xm2uYxi2WeLappA==',client_secret:process.env.map_client_secret}})
+        map_token = response.data.access_token;
+        token_expiry = (((response.data.expires_in - 300) * 1000) + Date.now())
+        const c = await map.findByIdAndUpdate(process.env.map_id,({token:map_token,expires:token_expiry}))
+
+        c.save();
+        return next()
+
+    }catch(e){
+        console.log(e)
+        return next()
+    }
+    }next();
+})
 app.use((req,res,next) =>{
     // console.log(req.originalUrl)
     // console.log(req.get('Referrer'))
     // // console.log(req.get('Referrer') && req.get('Referrer') !== 'http://localhost:3000/camps/login')
-    res.locals.mapToken = process.env.map_token
+    // console.log(map_token)
+    res.locals.mapToken = map_token
     res.locals.returnTo = req.session.returnTo;
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
@@ -161,21 +236,26 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
     res.render('camps',{campgrounds})
 }))
 
-app.get('/camps/new',isAuthenticated,(req,res) =>{
+app.get('/camps/new',(req,res) =>{
     //isAuthenticated
     let camp;
-        if(req.cookies.formData && req.cookies.formData.campground){
-        const{name = "",location = "",price = 0,description = ""} = req.cookies.formData.campground
-        camp = {
-            name,location,image,price,description
-        }}else
-        {
-        camp ={name:"",location:"",price:"",description:""}    
-}
+        if(req.cookies.formData && (req.cookies.formData.campground || req.cookies.formData.address)){
+            console.log(req.cookies.formData.campground)
+            if(req.cookies.formData.campground){
+            const{name = "",price = 0,description = ""} = req.cookies.formData.campground
+            ca = {name,price,description}}else{ca = {name:"",price:"",description:""}}
+            if(req.cookies.formData.address){
+                const{city = "",state = "",country = ""} = req.cookies.formData.address
+                loc={city,state,country};} else{loc={city:"",state:"",country:""}}
+                
+                camp={...ca,location:loc}
+
+    }else{camp ={name:"",price:"",description:"",location:{city:"",state:"",country:""}}}
+
         res.render('new',{camp}); 
 })
-app.post('/camps/new',isAuthenticated,upload.array('image'),campValidator,asyncWrap(async(req,res,next) =>{
-    console.log("hai")
+app.post('/camps/new',cupload,isAuthenticated,campValidator,asyncWrap(async(req,res,next) =>{
+    // isAuthenticated,
     const{campground:camp,address:addss} = req.body;
     const coo = await getAddress(addss);
     const adds = {...addss,...coo};
@@ -280,13 +360,20 @@ app.post('/camps/book/:id',isAuthenticated,bookingValidator,asyncWrap( async(req
 
 }))
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
+    let revs
     const {id} = req.params;
+    if(req.cookies?.formData && req.cookies.formData.review){
+        console.log(req.cookies.formData.review)
+        let{review:r=""} =  req.cookies.formData.review;
+        revs = {review:r}
+    }
+
     const camp = await campground.findById(id).populate({path:
         'reviews',
     populate:{  
         path:'author'
     }}).populate('author');
-    res.render('details',{camp})
+    res.render('details',{camp,revs})
 }))
 app.delete('/camps/:id',isAuthenticated,isAuthorized,asyncWrap( async(req,res,next) =>{
     await campground.findByIdAndDelete(req.params.id);
@@ -302,6 +389,7 @@ app.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next)
         req.flash('error','CAmpground not found');
         res.redirect('/camps')
     }
+   
     const rev = new review({...revs});
     rev.author = req.user;
     await rev.save();
@@ -309,6 +397,7 @@ app.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next)
     const val = (camp.average * ((camp.reviews.length )- 1)) + rev.rating;
     console.log(val)
     camp.average = val / ((camp.reviews.length)); 
+    res.clearCookie('formData'); 
     await camp.save().then((doc) =>{
     req.flash('success','Review successfully created'); 
     console.log(camp.average);
@@ -322,8 +411,9 @@ app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,n
 
     res.render('edit',{camp})
 }))
-app.put('/camps/:id/edit',isAuthenticated,isAuthorized,upload.array('image'),asyncWrap(async(req,res,next) => {
+app.put('/camps/:id/edit',isAuthenticated,isAuthorized,cupload,campValidators,asyncWrap(async(req,res,next) => {
     //isAuth
+
     const {id} = req.params;
     const{campground:camps,address:adds} = req.body;
     const camp = await campground.findByIdAndUpdate(id,{...camps});
@@ -363,5 +453,6 @@ app.use((err,req,res,next) => {
     // next()
 })
 app.listen(3000,()=>{
+    fetcher();
     console.log('listening on port 3000')
 });

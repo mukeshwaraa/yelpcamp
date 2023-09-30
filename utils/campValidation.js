@@ -1,7 +1,7 @@
 const joi = require('joi')
 const AppError = require('./error')
 const {campgroundSchema} = require('./schemas.js')
-const campValidator = function (req, res, next) {
+const campValidators = function (req, res, next) {
   const { error } = campgroundSchema.validate(req.body);
   if (!error) {
     return next()
@@ -11,4 +11,16 @@ const campValidator = function (req, res, next) {
     next(new AppError(msg,400))
   }
 }
-module.exports = campValidator;
+const campValidator = function (req,file,cb) {
+  const { error } = campgroundSchema.validate(req.body);
+  if (!error) {
+    return cb(null,true)
+  }
+  else {
+    const msg = error.details.map((er) => er.message).join(',')
+    return cb(new AppError(msg,400))
+  }
+}
+module.exports ={ 
+  campValidator,
+  campValidators}

@@ -6,6 +6,36 @@ var map,marker;
                 zoom:8,
                 location: true,
             });
+            map.on('styleimagemissing', (e) => {
+                // console.log('hai')
+
+                const id = e.id; // id of the missing image
+                // console.log(id) 
+                // console.log(e)                
+                // Check if this missing icon is
+                // one this function can generate.
+                const prefix = 'square-rgb-';
+                // if (!id.includes(prefix)) return;
+                 
+                // Get the color from the id.
+                // const rgb = id.replace(prefix, '').split(',').map(Number);
+                 
+                const width = 64; // The image will be 64 pixels square.
+                const bytesPerPixel = 4; // Each pixel is represented by 4 bytes: red, green, blue, and alpha.
+                const data = new Uint8Array(width * width * bytesPerPixel);
+                 
+                // for (let x = 0; x < width; x++) {
+                // for (let y = 0; y < width; y++) {
+                // const offset = (y * width + x) * bytesPerPixel;
+                // data[offset + 0] = rgb[0]; // red
+                // data[offset + 1] = rgb[1]; // green
+                // data[offset + 2] = rgb[2]; // blue
+                // data[offset + 3] = 255; // alpha
+                // }
+                // }
+                 
+                map.addImage('map_sdk?layer=vector&v=3.0&callback=initMap1', { width: width, height: width, data: data });
+                });
             map.on('load', function() {
                 var all_data = [];
                 for (c of cs) {
@@ -21,6 +51,7 @@ var map,marker;
                     }
                     all_data.push(obj);
                 }
+                // map.addImage('https://apis.mappls.com/advancedmaps/api/835cde86-e175-4e5c-87a1-806292b4e31a/map_sdk?layer=vector&v=3.0&callback=initMap1')
                 marker = new mappls.Marker({
                     map: map,
                     position: {
@@ -59,3 +90,5 @@ var map,marker;
         function randomNumber(min, max) {
             return Math.random() * (max - min) + min
         }
+
+
