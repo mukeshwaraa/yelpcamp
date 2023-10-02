@@ -8,14 +8,5 @@ const isAuthenticated = async function(req,res,next){
     }
 }
 
-const isAuthenticatedd = async function(req,file,cb){
-    console.log('ha')
-    if(!req.isAuthenticated()){
-        console.log(req);
-        return cb(new Error('you need to be logged in'))
-    }else{
-        return cb(null,true)
-    }
-}
 
-module.exports = {isAuthenticated,isAuthenticatedd};
+module.exports = isAuthenticated;

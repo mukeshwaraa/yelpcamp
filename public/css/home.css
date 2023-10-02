@@ -21,3 +21,50 @@
 .maxImages.show{
     display: block;
 }
+.closeButton{
+    position: absolute;
+    background-color: transparent;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+}
+.closingButton{
+   background-color: transparent;
+   color: gray;
+}
+.toShow{
+    cursor: pointer;
+}
+.carouselImagess{
+    position: fixed;
+    display: none;
+    /* min-height: 100%;
+    min-width: 100%; */
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    transition: display 5s ;
+    z-index: 2;
+
+}
+.carouselImagess.show{
+    display: flex;
+    flex-direction: column;
+}
+
+header.hide{
+    display: none;
+}
+
+.maxFileSize{
+    display:none ;
+    color: red;
+}
+
+.maxFileSize.show{
+    display:block;
+}

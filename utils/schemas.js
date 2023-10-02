@@ -22,22 +22,22 @@ const extension = (joi) =>({
 const joi = baseJoi.extend(extension)
 const reviewSchema = joi.object({
     review: joi.object({
-      review: joi.string().required().escapeHTML(),
+      review: joi.string().trim().required().escapeHTML(),
       rating: joi.number().required().min(1),
     }).required()
   })
 
   const campgroundSchema = joi.object({
     campground: joi.object({
-      name: joi.string().required().escapeHTML(),
-      description: joi.string().required().escapeHTML(),
+      name: joi.string().trim().required().escapeHTML(),
+      description: joi.string().trim().required().escapeHTML(),
       price: joi.number().required().min(0),
     }).required(),
     deleteImages: joi.array(),
     address:joi.object({
-      city: joi.string().required().escapeHTML(),
-      state: joi.string().required().escapeHTML(),
-      country: joi.string().required().escapeHTML()
+      city: joi.string().trim().required().escapeHTML(),
+      state: joi.string().trim().required().escapeHTML(),
+      country: joi.string().trim().required().escapeHTML()
     }).required()
   })
 

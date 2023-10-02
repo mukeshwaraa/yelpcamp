@@ -1,30 +1,57 @@
 <% layout('../boilerplate/boilerplate') -%>
 <script src="https://apis.mappls.com/advancedmaps/api/<%= mapToken %>/map_sdk?layer=vector&v=3.0&callback=initMap1" defer async crossorigin="anonymous"></script>
 <div class="container">
+  <div class="carouselImagess flex-column">
+    <div class="closeButton">
+      <button class="closingButton">X</button>
+    </div>
+    <div id="carouselExample" class="carousel slide">
+      <div class="carousel-inner">
+        
+          <% camp.images.forEach((img,i) => { %>
+            <div class="carousel-item  <%= i == 0? 'active': '' %>">
+            <img src="<%= img.path %>" class="img-fluid mx-auto d-block" alt="..." style="min-height: 100dvh; max-height: 100dvh; max-width: 80dvw;" >
+            </div>
+          <% }) %>
+      </div>
+      <% if (camp.images.length > 1) { %>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+      <% } %>
+      
+    
+    </div>
+  </div>
 <div class="card mb-3">
   <div class="card-header d-flex justify-content-center  mb-1 rounded " >
     <h3 class="card-title"><%= camp.name %></h3>
   </div>
-<div id="carouselExample" class="carousel slide">
+<div id="carouselExample1" class="carousel slide">
   <div class="carousel-inner bg-dark-subtle">
     
       <% camp.images.forEach((img,i) => { %>
         <div class="carousel-item  <%= i == 0? 'active': '' %>">
-        <a href="<%= img.path %>"><img src="<%= img.path %>" class="img-fluid mx-auto d-block" alt="..." style="min-height: 50dvh; max-height: 50dvh;" >
-        </a>
+        <img src="<%= img.path %>" class="img-fluid mx-auto d-block toShow" alt="..." style="min-height: 50dvh; max-height: 50dvh;" >
         </div>
       <% }) %>
   </div>
   <% if (camp.images.length > 1) { %>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample1" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
   </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample1" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Next</span>
   </button>
   <% } %>
+
 
 </div>
   <div class="card-body mb-3">
@@ -75,7 +102,7 @@
      
       <div class="mb-3  col-8 offset-2">
         <label for="description" class="form-label">Your View</label>
-        <textarea  class="form-control" id="description"  required name="review[review]" rows="3"><%= revs?.review%></textarea>
+        <textarea  class="form-control" id="description"  required name="review[review]" rows="3"><%= revs?.review || ""%></textarea>
         <div class="valid-feedback">
             Looks good!
           </div>
@@ -126,5 +153,6 @@
 <script>
   const c = <%- JSON.stringify(camp) %>
 </script>
+<script src="/js/toShow.js"></script>
 <script src="/js/map.js" crossorigin="anonymous"></script>
 
