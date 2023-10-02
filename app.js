@@ -7,49 +7,25 @@ const path = require('path');
 const engine = require('ejs-mate');
 const methodOverride = require('method-override'); 
 const asyncWrap = require('./utils/asyncWrap'); 
-const {campValidator,campValidators} = require('./utils/campValidation');
+const campValidator = require('./utils/campValidation');
 const reviewValidator = require('./utils/reviewValidator');
 const bookingValidator = require('./utils/bookingValidator')
 const session = require('express-session');
 const cookie_parser = require('cookie-parser');
 const flash = require('connect-flash')
 const passport = require('passport');
-const {isAuthenticated,isAuthenticatedd} = require('./utils/isAuth')
+const isAuthenticated = require('./utils/isAuth')
 const isAuthorized = require('./utils/isAuthorized')
 const LocalStrategy = require('passport-local');
 const multer = require('multer');
-const axios = require('axios')
+const axios = require('axios');
+const url = 'https://outpost.mappls.com/api/security/oauth/token'
+const getAddress = require('./utils/getAddres')
+const cupload = require('./utils/cUplaod')
+const securityPolicy = require('./utils/helmet')
 const mongoSanitize = require('express-mongo-sanitize')
 const {storage,cloudinary} = require('./cloudinary/index')
-const cupload = function(req,res,next){
-    const upload = multer({
-        storage:storage,
-        fileFilter: function(req, file, cb){
-            // console.log(req.body);
-            isAuthenticatedd(req,file,cb)
-            campValidator(req,file,cb)
-            // checkFileType(file, cb);
-        }
-            }).array('image',3);
-    upload(req,res,function(err){
-        // console.log(err)
-        if(err instanceof multer.MulterError){
-            if(err.message == 'Unexpected field'){
-                return next(new AppError("Exceedind max number files allowed in images",500))}
-                else{
-                    return next(new AppError(err.message,500))
-                }
-        }else if(err){
-            if(err.message == 'you need to be logged in'){  
-             res.cookie('formData',req.body)
-            req.flash('error','you need to be logged in')
-            return res.redirect('/camps/login')}else{
-            return next(new AppError(err.message,err.status))}
-        }else{
-            return next();
-        }
-    })
-}
+
 const tokenfetcher = async function(){
 try{
     m = await map.findById(process.env.map_id)
@@ -113,64 +89,7 @@ app.use(session({
     }
   }))
 app.use(flash());
-const scriptSrcUrls = [
-    "https://apis.mappls.com/",
-    "https://stackpath.bootstrapcdn.com/",
-    "https://apis.mappls.com/advancedmaps/api",
-    "https://kit.fontawesome.com/",
-    "https://cdnjs.cloudflare.com/",
-    "https://cdn.jsdelivr.net",
-];
-const styleSrcUrls = [
-    "https://apis.mappls.com/",
-    "https://apis.mappls.com/advancedmaps/api/4c6f6b50-3142-4e8d-84e8-bca1af005d35/map_sdk",
-    "https://kit-free.fontawesome.com/",
-    "https://stackpath.bootstrapcdn.com/",
-    "https://fonts.googleapis.com/",
-    "https://use.fontawesome.com/",
-    "https://cdn.jsdelivr.net",
-];
-const connectSrcUrls = [
-    "https://mt1.mapmyindia.com/",
-     "https://mt2.mapmyindia.com/",
-    "https://mt4.mapmyindia.com/",
-    "https://mt5.mapmyindia.com/",
-      "https://mt3.mapmyindia.com",
-    "https://www.mappls.com/apis/",
-    "https://apis.mapmyindia.com/",
-    "https://apis.mappls.com/",
-    "https://apis.mappls.com/",
-    "https://apis.mappls.com/",
-     "https://api.mapbox.com/",
-    "https://a.tiles.mapbox.com/",
-    "https://b.tiles.mapbox.com/",
-    "https://events.mapbox.com/",
-    "https://api.geoapify.com/"
-];
-const fontSrcUrls = [];
-app.use(
-    helmet.contentSecurityPolicy({
-        directives: {
-            defaultSrc: [],
-            connectSrc: ["'self'", ...connectSrcUrls],
-            scriptSrc: ["'unsafe-inline'", "'self'","'unsafe-eval'", ...scriptSrcUrls],
-            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-            workerSrc: ["'self'", "blob:"],
-            objectSrc: [],
-            imgSrc: [
-                "'self'",
-                "blob:",
-                "data:",
-                "https://apis.mappls.com/map_v3/1.png",
-                "https://apis.mappls.com/",
-                "https://res.cloudinary.com/ds9co9eif/",
-                "https://images.unsplash.com/",
-                "https://cdn.mapmyindia.com/mappls_web/logos/",
-                "https://apis.mappls.com/"],
-            fontSrc: ["'self'", ...fontSrcUrls],
-        },
-    })
-);
+app.use(helmet.contentSecurityPolicy(securityPolicy));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(user.authenticate()));
@@ -178,34 +97,18 @@ passport.use(new LocalStrategy(user.authenticate()));
 // use static serialize and deserialize of model for passport session support
 passport.serializeUser(user.serializeUser());
 passport.deserializeUser(user.deserializeUser());
-const getAddress = async function(location){
-    const a = Object.values(location);
-    const adds = a.join(',')
-    console.log(adds)
-    try{
-        const coordinates = await axios.get(`https://api.geoapify.com/v1/geocode/search?text=${adds}&format=json&limit=1&apiKey=${process.env.geoapify_key}`)
-        const coo = {lat:coordinates.data.results[0].lat,long:coordinates.data.results[0].lon}
-        return coo;
-    }catch(e){
-        console.log(e)
-    }
-}
-const url = 'https://outpost.mappls.com/api/security/oauth/token'
-const config = {headers:{'Content-Type' : 'application/x-www-form-urlencoded'},
-params:{grant_type:"client_credentials",client_id:'33OkryzDZsL6Eu0TEt2Ub-8I0OdrwHDBDhiEeWkzeCoAdzEZYUJ0i_lqNeBlxvwzBUHOVD0Xm2uYxi2WeLappA==',client_secret:process.env.map_client_secret}}
-
 app.use(async(req,res,next) =>{
     // console.log("token expiring",token_expiry)
     if(Date.now() > token_expiry){
-        console.log('hai')
+        // console.log('hai')
         // console.log(Date.now()) 
         try{
         const response = await axios.post(url,{headers:{'Content-Type' : 'application/x-www-form-urlencoded'}},{params:{grant_type:"client_credentials",client_id:'33OkryzDZsL6Eu0TEt2Ub-8I0OdrwHDBDhiEeWkzeCoAdzEZYUJ0i_lqNeBlxvwzBUHOVD0Xm2uYxi2WeLappA==',client_secret:process.env.map_client_secret}})
         map_token = response.data.access_token;
-        token_expiry = (((response.data.expires_in - 300) * 1000) + Date.now())
-        const c = await map.findByIdAndUpdate(process.env.map_id,({token:map_token,expires:token_expiry}))
+        token_expiry = (((response.data.expires_in) * 1000) + Date.now())
+        await map.findByIdAndUpdate(process.env.map_id,({token:map_token,expires:token_expiry}))
 
-        c.save();
+        
         return next()
 
     }catch(e){
@@ -238,19 +141,24 @@ app.get('/camps',asyncWrap( async(req,res,next) =>{
 
 app.get('/camps/new',(req,res) =>{
     //isAuthenticated
-    let camp;
-        if(req.cookies.formData && (req.cookies.formData.campground || req.cookies.formData.address)){
-            console.log(req.cookies.formData.campground)
+    let camp = {name:"",price:"",description:"",location:{city:"",state:"",country:""}};
+        if(req?.cookies?.formData?.campground || req?.cookies?.formData?.address){
+            // console.log(req.cookies.formData.campground)
+            ca = {name:"",price:"",description:""}
+            loc={city:"",state:"",country:""}
             if(req.cookies.formData.campground){
             const{name = "",price = 0,description = ""} = req.cookies.formData.campground
-            ca = {name,price,description}}else{ca = {name:"",price:"",description:""}}
+            ca = {name,price,description}}
+            // else{ca = {name:"",price:"",description:""}}
             if(req.cookies.formData.address){
                 const{city = "",state = "",country = ""} = req.cookies.formData.address
-                loc={city,state,country};} else{loc={city:"",state:"",country:""}}
+                loc={city,state,country};}
+            // else{loc={city:"",state:"",country:""}}
                 
                 camp={...ca,location:loc}
 
-    }else{camp ={name:"",price:"",description:"",location:{city:"",state:"",country:""}}}
+    }
+    // else{camp ={name:"",price:"",description:"",location:{city:"",state:"",country:""}}}
 
         res.render('new',{camp}); 
 })
@@ -277,7 +185,7 @@ app.get('/camps/register',(req,res) =>{
 
 app.post('/camps/register',asyncWrap(async(req,res,next) =>{
     try{
-    console.log(res.locals.returnTdoco)    
+    // console.log(res.locals.returnTdoco)    
     const redirectURL = res.locals.returnTo || '/camps';
     const{username,password,email} = req.body.user
     const users = new user({username,email});
@@ -362,7 +270,7 @@ app.post('/camps/book/:id',isAuthenticated,bookingValidator,asyncWrap( async(req
 app.get('/camps/:id',asyncWrap(async (req,res,next) =>{
     let revs
     const {id} = req.params;
-    if(req.cookies?.formData && req.cookies.formData.review){
+    if(req.cookies?.formData?.review){
         console.log(req.cookies.formData.review)
         let{review:r=""} =  req.cookies.formData.review;
         revs = {review:r}
@@ -395,7 +303,7 @@ app.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next)
     await rev.save();
     await camp.reviews.push(rev)
     const val = (camp.average * ((camp.reviews.length )- 1)) + rev.rating;
-    console.log(val)
+    // console.log(val)
     camp.average = val / ((camp.reviews.length)); 
     res.clearCookie('formData'); 
     await camp.save().then((doc) =>{
@@ -411,7 +319,7 @@ app.get('/camps/:id/edit',isAuthenticated,isAuthorized,asyncWrap(async(req,res,n
 
     res.render('edit',{camp})
 }))
-app.put('/camps/:id/edit',isAuthenticated,isAuthorized,cupload,campValidators,asyncWrap(async(req,res,next) => {
+app.put('/camps/:id/edit',isAuthenticated,isAuthorized,cupload,campValidator,asyncWrap(async(req,res,next) => {
     //isAuth
 
     const {id} = req.params;
@@ -427,7 +335,7 @@ app.put('/camps/:id/edit',isAuthenticated,isAuthorized,cupload,campValidators,as
     }
     // await campground.findByIdAndUpdate(id1,{$pull: {reviews:id2}})
     camp.images.push(...imgs)
-    camp.images.$pull
+    // camp.images.$pull
     camp.location = adds
     camp.save().then((doc) => {
     req.flash('success','Campground changes has been successfully saved'); 
@@ -437,8 +345,12 @@ app.put('/camps/:id/edit',isAuthenticated,isAuthorized,cupload,campValidators,as
 app.delete('/camps/rev/:id1/:id2',isAuthenticated,asyncWrap( async(req,res,next) =>{
     const {id1,id2} = req.params;
     console.log(id2)
-    await campground.findByIdAndUpdate(id1,{$pull: {reviews:id2}})
-    await review.findByIdAndDelete(id2);
+    const camp = await campground.findById(id1)
+    const rev = await review.findById(id2)
+    const length = camp.reviews.length;
+    const val = ((camp.average*length) - rev.rating) /(length - 1)
+    await camp.updateOne({$pull: {reviews:id2},average:val})
+    await rev.deleteOne();
     req.flash('success','Review successfully Deleted'); 
     res.redirect(`/camps/${id1}`);
     //isAuth
