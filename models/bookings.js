@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Campground = require('./campgrounds')
+const User = require('./user')
 
 const bookingSchema = new Schema({
     from:{
@@ -14,10 +15,17 @@ const bookingSchema = new Schema({
     camp:{
         type:Schema.Types.ObjectId,
         ref:'Campground'
+    },
+    user:{
+        type:Schema.Types.ObjectId,
+        ref:'User'
     }
     
 
 })
+
+
+
 
 const booking = mongoose.model("Booking",bookingSchema);
 

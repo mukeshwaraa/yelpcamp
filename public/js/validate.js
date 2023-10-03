@@ -10,9 +10,8 @@
     const inps = document.querySelector('#image')
     const divv = document.querySelector('.maxImages')
     const maxFileSize = document.querySelector('.maxFileSize')
-    let maxSize = 1000000; 
-    // 10485760;
-    let currentSize;
+    let maxSize = 10485760;
+    let currentSize = 0;
     let FL,allFiles;
 
     if(inputs){
@@ -52,12 +51,15 @@
             divv.classList.add('show')
           }else{
               divv.classList.remove('show')
-            }} 
+            }
+            
           if(currentSize > maxSize){
             maxFileSize.classList.add('show')
           }else{
-              maxFileSize.classList.remove('show')
-            }
+                maxFileSize.classList.remove('show')
+          }  
+          } 
+          
         }
 
         form.classList.add('was-validated')        
@@ -66,22 +68,3 @@
   })()
 
 
-
-// (() => {
-//   'use strict'
-
-//   // Fetch all the forms we want to apply custom Bootstrap validation styles to
-//   const forms = document.querySelectorAll('.needs-validation')
-
-//   // Loop over them and prevent submission
-//   Array.from(forms).forEach(form => {
-//     form.addEventListener('submit', event => {
-//       if (!form.checkValidity()) {
-//         event.preventDefault()
-//         event.stopPropagation()
-//       }
-
-//       form.classList.add('was-validated')
-//     }, false)
-//   })
-// })()
