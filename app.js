@@ -75,16 +75,13 @@ app.use(methodOverride('_method'))
 app.use(cookie_parser('secret'))
 const store = MongoDBStore.create({
     mongoUrl : mongoDB,
-    touchAfter: 24*60*60,
-    crypto:{
-        secret: process.env.SESSION_SECRET
-    }
+    touchAfter: (24*60*60)
 })
 store.on('error',(e) =>{
     console.log("Session store Error",e)
 })
 app.use(session({
-    store,
+    store:store,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
