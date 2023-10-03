@@ -33,7 +33,7 @@ const db = mongoose.connection;
 //Bind connection to error event (to get notification of connection errors)
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => { console.log("database connected") });
-const campground = require('./models/campgrounds');
+const campground = require('./models/campgrounds')
 const review = require('./models/reviews')
 const user = require('./models/user');
 const booking = require('./models/bookings')
