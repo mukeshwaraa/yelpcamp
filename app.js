@@ -25,7 +25,6 @@ const helmet = require('helmet')
 // override with POST having ?_method=DELETE
 // use ejs-locals for all ejs templates:
 const mongoose = require('mongoose');
-// const mongoDB =  process.env.DB_URL;
 const mongoDB = (process.env.NODE_ENV !== "production") ? 'mongodb://127.0.0.1/yelp-camp' : process.env.DB_URL;
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 //Get the default connection
