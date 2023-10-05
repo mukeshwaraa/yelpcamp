@@ -1,7 +1,7 @@
 <% layout('../boilerplate/boilerplate') -%>
 <script src="https://apis.mappls.com/advancedmaps/api/<%= mapToken %>/map_sdk?layer=vector&v=3.0&callback=initMap1" defer async crossorigin="anonymous"></script>
 <div class="container">
-  <div class="carouselImagess flex-column">
+  <div class="carouselImagess">
     <div class="closeButton">
       <button class="closingButton p-2">X</button>
     </div>
@@ -10,7 +10,7 @@
         
           <% camp.images.forEach((img,i) => { %>
             <div class="carousel-item  <%= i == 0? 'active': '' %>">
-            <img src="<%= img.path %>" class="img-fluid mx-auto d-block" alt="..." style="min-height: 100dvh; max-height: 100dvh; max-width: 80dvw;" >
+            <img src="<%= img.path %>" class="mx-auto d-block" alt="..." style="min-height: 100dvh; max-height: 100dvh; max-width: 80dvw;object-fit: contain; object-position: center;" >
             </div>
           <% }) %>
       </div>
@@ -37,7 +37,7 @@
     
       <% camp.images.forEach((img,i) => { %>
         <div class="carousel-item  <%= i == 0? 'active': '' %>">
-        <img src="<%= img.path %>" class="img-fluid mx-auto d-block toShow" alt="..." style="min-height: 50dvh; max-height: 50dvh;" >
+        <img src="<%= img.path %>" class="mx-auto d-block toShow" alt="..." style="min-height: 50dvh; max-height: 50dvh; object-fit: cover; object-position: center;" >
         </div>
       <% }) %>
   </div>

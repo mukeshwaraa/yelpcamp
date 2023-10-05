@@ -136,6 +136,28 @@ app.get('/',(req,res)=>{
     res.render('home')
 });
 app.use('/camps/book',bookingRoute)
+
+app.get('/camps/searchResult',asyncWrap(async(req,res,next)=>{
+    const {search} = req.query
+    const qu = search?.trim();
+   const campgrounds = await campground.find({name:new RegExp('^'+ qu,'i')})
+    // console.log(campgrounds)
+       res.render('camps',{campgrounds})
+    // res.send(campgrounds)
+    // console.log(qu) 
+    // console.log("from searchresulr")
+
+}))
+
+app.get('/camps/search',asyncWrap( async(req,res,next) =>{
+    const {q} = req.query
+    const qu = q.trim();
+    if(qu.length < 1 || qu.length > 9){
+        res.send('NO campgrounds Found')
+    }else{ 
+    const camp = await campground.find({name:new RegExp('^'+ qu,'i')}).limit(3)
+    res.send(camp)}
+}))
 app.delete('/camps/rev/:id1/:id2',isAuthenticated,asyncWrap( async(req,res,next) =>{
     const {id1,id2} = req.params;
     console.log(id2)

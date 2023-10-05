@@ -22,9 +22,9 @@ function setAttribute(e,attri){
 
 
 if(calFrom){
-calFrom.addEventListener('change',() => hai(attri))
+calFrom.addEventListener('change',() => dateSetter(attri))
 setAttribute(calFrom,attri)
-function hai(a){
+function dateSetter(a){
     calTo.removeAttribute('disabled')
     const m = calFrom.value
     calTo.setAttribute('min', m)

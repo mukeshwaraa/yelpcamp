@@ -14,6 +14,7 @@ const review = require('../models/reviews')
 const user = require('../models/user');
 
 router.get('/',asyncWrap( async(req,res,next) =>{
+    // console.log("from main camp route")
     const campgrounds =await campground.find({})
     res.render('camps',{campgrounds})
 }))
