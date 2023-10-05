@@ -179,7 +179,7 @@ router.put('/:id/edit',isAuthenticated,isAuthorized,cupload,campValidator,asyncW
         res.redirect(`/camps/${doc._id}`);
     })
 }))
-router.post('/camps/:id/review',isAuthenticated,reviewValidator,async(req,res,next) =>{
+router.post('/:id/review',isAuthenticated,reviewValidator,async(req,res,next) =>{
     const{review:revs} = req.body;
     const {id} = req.params;
     const camp = await campground.findById(id)
