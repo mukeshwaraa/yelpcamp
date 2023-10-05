@@ -25,12 +25,15 @@ Closebutton.addEventListener('click',() =>{
     header.classList.remove('hide')
    
 })
-
+form.addEventListener('submit',() => {
+    b.setAttribute('disabled',true)
+})
 searchForm2.addEventListener('input',async function(){
+    this.value = this.value.trimStart();
     showBox.innerHTML=""
     try{
     const response = await axios.get("/camps/search",{params:{q:this.value}})
- 
+    showBox.innerHTML=""
     if(response.data.length){
         const d = document.createElement('div');
         d.classList.add('searchResult');

@@ -140,9 +140,17 @@ app.use('/camps/book',bookingRoute)
 app.get('/camps/searchResult',asyncWrap(async(req,res,next)=>{
     const {search} = req.query
     const qu = search?.trim();
+    
+    if(qu.length < 1 ){
+        req.flash("error","no campgrounds found")
+        res.redirect('/camps')
+    }
    const campgrounds = await campground.find({name:new RegExp('^'+ qu,'i')})
-    // console.log(campgrounds)
-       res.render('camps',{campgrounds})
+    if(campgrounds.length){
+       res.render('camps',{campgrounds})}else{
+        req.flash("error","no campgrounds found")
+        res.redirect('/camps')
+       }
     // res.send(campgrounds)
     // console.log(qu) 
     // console.log("from searchresulr")
@@ -152,6 +160,7 @@ app.get('/camps/searchResult',asyncWrap(async(req,res,next)=>{
 app.get('/camps/search',asyncWrap( async(req,res,next) =>{
     const {q} = req.query
     const qu = q.trim();
+    console.log(qu)
     if(qu.length < 1 || qu.length > 9){
         res.send('NO campgrounds Found')
     }else{ 
