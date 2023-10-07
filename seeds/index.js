@@ -15,7 +15,9 @@ const { json } = require('express');
 
 
 const sample = array => array[Math.floor(Math.random() * array.length)];
-const id = "6509d95f03cb4fdc5b542d73";
+// atlasd down
+// const id = "651c3d65d492081654fff490";
+const id = "651a9b940d1698d7692d72e0";
 const im =  [
   {
     path: 'https://res.cloudinary.com/ds9co9eif/image/upload/v1695806054/YelpCamp/joykc6lyjcs6bztqlhfe.avif',
@@ -39,11 +41,6 @@ const im =  [
 
 const seedDB = async () => {
     await Campground.deleteMany({});
-    const map = new Map({
-      token:'316251cc-03f8-492f-b58f-9f87caeb726b',
-      expires: (5600 * 1000) + Date.now()
-    })
-    map.save();
     for (let i = 0; i < 150; i++) {
         const prpicker =  function(max,min){return Math.floor(Math.random() * (max - min + 1) + min)}
         const random1000 = Math.floor(Math.random() * 150);

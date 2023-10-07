@@ -1,13 +1,33 @@
-<% layout('../boilerplate/boilerplate') -%>
-<div class="d-flex mainDiv flex-column container-fluid  text-center bg-dark  text-white align-content-center  justify-content-center" 
-style="height: 86vh;margin-top: -20px; ">
-    <div class="d-flex flex-column container align-content-center justify-content-center">
-    <h1 class="text-center">YelpCamp</h1>
-    <p class="lead fs-6">Welcome to YelpCamp <br> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam eius assumenda ea nulla quisquam a voluptatibus ad. Adipisci quos amet, qui eius ut suscipit officiis autem blanditiis doloremque perspiciatis dolorum.
-    Eius corporis, labore et, non ducimus quasi facere distinctio exercitationem, dicta fuga doloribus voluptas deleniti perferendis ea porro eligendi. Maiores obcaecati, excepturi odit cumque sapiente earum dicta alias ipsa! Vitae.
-    Corporis quod sint eos debitis ut consectetur officia mollitia magnam laboriosam inventore. Animi ipsam totam atque laudantium assumenda, culpa officia deserunt magni ipsa enim ex quo! Tenetur, odit sit? Deleniti?</p>
-    <div class="d-grid gap-2 col-4 mx-auto"> 
-    <a href="/camps" class="btn btn-lg btn-secondary font-weight-bold">View campgrounds</a>   
-</div>
-</div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YelpCamp</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+     <link rel="stylesheet" href="/css/homeroute.css">
+</head>
+
+<body class="d-flex flex-column text-white bg-dark">
+    <%- include('../partials/homeNavBar') %>
+    <div class="container d-flex w-100 h-100 p-3 mx-auto flex-column justify-content-center">
+        <main class="px-3">
+            <h1>YelpCamp</h1>
+            <p class="lead"> Welcome to YelpCamp! <br> Jump right in and explore our many campgrounds. <br>
+                Feel free to share some of your own and comment on others!</p>
+            <a href="/camps" class="btn btn-lg btn-secondary font-weight-bold border-white bg-white">View
+                Campgrounds</a>
+        </main>
+
+        
+
+
+    </div>
+    <footer class="mt-auto text-white-50">
+        <p>&copy; 2023 </p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+</body>
+
+</html>

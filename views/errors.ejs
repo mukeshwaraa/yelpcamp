@@ -2,8 +2,10 @@
 <div class="container" style="min-width: min-content;">
 <div class="alert alert-danger" role="alert">
     <h4 class="alert-heading">Error</h4>
-    <h4 class="mb-2"><%= err.message %> </h4>
+    <h4 class="mb-2">"Something went wrong"</h4>
+
     <% if(process.env.NODE_ENV !== 'production') {%>
-    <p><%= err.stack %></p>
+      <h4 class="mb-2"><%= err.message %> </h4>
+          <p><%= err.stack %></p>
     <% } %>
   </div>

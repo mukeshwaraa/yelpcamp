@@ -1,9 +1,3 @@
-.mainDiv{
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("https://images.unsplash.com/photo-1559521783-1d1599583485?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
-    background-position: center ;
-    background-size: cover;
-}
 #map {
     padding: 0;
     width: 100%;
@@ -68,3 +62,46 @@ header.hide{
 .maxFileSize.show{
     display:block;
 }
+.searchForm{
+    font-size: 1.5rem;
+    color: grey;
+    text-align: start;
+    border: 1px solid gray;
+    width: 15rem;
+    height: max-content;
+    border-radius: 0.5rem;
+  
+}
+.searchForm:hover{
+    box-shadow: 0 0 0 2px yellowgreen;    
+}
+
+
+
+.searchBox{
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    transition: display 5s ;
+    z-index: 2;
+}
+.searchBox.show{
+    display: flex;
+    flex-direction: column;
+}
+
+.searchForm2{
+    font-size: 2rem;
+    height: 3rem;
+}
+.searchBoxContainer a{
+    color: black;
+    text-decoration: none;
+}
+

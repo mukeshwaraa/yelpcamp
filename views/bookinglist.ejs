@@ -26,12 +26,15 @@
           <% } %>
         </div>
       </div>
-      <div class="col-md-8 d-flex flex-column"   onclick="location.href='/camps/<%=booking.camp.id%>';" >
+      <div class="col-md-8 d-flex flex-column" style="cursor: pointer;" id="changer" too="/camps/book/<%=booking.camp.id%>/<%=booking.id%>" >
         <div class="card-body d-flex flex-column justify-content-between">
           <h3 class="card-title align-self-center"><%= booking.camp.name %></h3>
           <p class="card-text "><%= booking.camp.description %></p>
           <p class="card-text"><small class="text-body-secondary"><%= booking.camp.location.fullAddress %></small></p>
           <h6>Booked From <%= booking.from.toLocaleDateString() %> To <%= booking.to.toLocaleDateString() %> </h6>
+            <form class="d-inline col-6 offset-3" action="/camps/book/<%= booking.id %>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-danger col-12 p-2">Delete Booking</button>
+            </form>
           <%  if(booking.camp.reviews.length){ %>
               <p class="starability-result" data-rating="<%- (Math.floor(booking.camp.average)) %>"> </p>
           <%  }%>

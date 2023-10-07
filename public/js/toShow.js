@@ -3,7 +3,7 @@ const divElement = document.querySelector('.carouselImagess')
 const header = document.querySelector('header')
 // const toClose = document.querySelector('.carouselImagess.show')
 window.addEventListener('keydown',(e) => {
-    if(divElement.classList.contains('show')){
+    if(e.key === "Escape" && divElement.classList.contains('show')){
          divElement.classList.remove('show') 
          header.classList.remove('hide')    
     }
