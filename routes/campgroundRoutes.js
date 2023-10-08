@@ -57,7 +57,7 @@ router.post('/new',cupload,isAuthenticated,campValidator,asyncWrap(async(req,res
     res.redirect(`/camps/${doc._id}`)}) 
 }))
 router.get('/register',(req,res) =>{
-    if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') && ('http://localhost:3000/camps/login')) ){
+    if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') || ('http://localhost:3000/camps/login')) ){
    req.session.returnTo = req.get('Referrer') 
     }
     res.render('register');
@@ -85,7 +85,7 @@ router.post('/register',asyncWrap(async(req,res,next) =>{
     }
 }))
 router.get('/login',(req,res) =>{
-    if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') && ('http://localhost:3000/camps/login'))){
+    if(req.get('Referrer') && req.get('Referrer') !== (('http://localhost:3000/camps/register') || ('http://localhost:3000/camps/login'))){
    req.session.returnTo = req.get('Referrer')}
     res.render('login');
 })
