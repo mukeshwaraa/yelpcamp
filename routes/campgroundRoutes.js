@@ -57,7 +57,8 @@ router.post('/new',cupload,isAuthenticated,campValidator,asyncWrap(async(req,res
     res.redirect(`/camps/${doc._id}`)}) 
 }))
 router.get('/register',(req,res) =>{
-    if(req.get('Referrer') && !req.get('Referrer').includes(('/register') || ('/login')) ){
+const regex = /(login$|register$)/;
+    if(req.get('Referrer') && !regex.test(req.get('Referrer'))){
    req.session.returnTo = req.get('Referrer') 
     }
     res.render('register');
@@ -85,7 +86,8 @@ router.post('/register',asyncWrap(async(req,res,next) =>{
     }
 }))
 router.get('/login',(req,res) =>{
-    if(req.get('Referrer') && !req.get('Referrer').includes(('/register') || ('/login'))){
+    const regex = /(login$|register$)/;
+    if(req.get('Referrer') && !regex.test(req.get('Referrer'))){
    req.session.returnTo = req.get('Referrer')}
     res.render('login');
 })
